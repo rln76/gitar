@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sangarkiv</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1916;
+    --surface2: #242220;
+    --border: #2e2c28;
+    --accent: #c8a96e;
+    --accent2: #8fbe8f;
+    --accent3: #7ab3d4;
+    --text: #e8e4dc;
+    --text-muted: #7a7670;
+    --text-dim: #4a4844;
+    --danger: #c06060;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    padding: 1rem 1.5rem 0;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  header .subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-top: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 0.6rem 1.3rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .tab:hover { color: var(--text-muted); }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── INPUTS ── */
+  input[type="text"], input[type="url"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    padding: 0.65rem 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--text-dim); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.65rem 1.1rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn:active { transform: scale(0.97); }
+
+  .btn.secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn.danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid transparent;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  .btn.danger:hover { background: rgba(192,96,96,0.12); }
+  .btn.blue {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  /* ── SEARCH BAR ── */
+  .search-area {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+    align-items: center;
+  }
+  .search-wrap { position: relative; flex: 1; }
+  .search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    pointer-events: none;
+  }
+  #searchInput { padding-left: 2.4rem; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .count-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .sort-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.3rem 0.6rem;
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* ── SONG CARDS ── */
+  .song-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .song-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    gap: 0.8rem;
+    transition: border-color 0.15s, background 0.15s;
+    animation: fadeIn 0.18s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .song-card:hover { border-color: var(--accent); background: var(--surface2); }
+  .song-card.in-set { border-color: rgba(122,179,212,0.35); }
+
+  .song-info { min-width: 0; }
+  .song-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .song-artist {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .song-comment {
+    font-size: 0.73rem;
+    color: var(--text-dim);
+    margin-top: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .song-actions { display: flex; gap: 0.3rem; align-items: center; flex-shrink: 0; }
+
+  .link-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: background 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .link-btn:hover { background: rgba(143,190,143,0.12); border-color: var(--accent2); }
+
+  .no-link { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--text-dim); padding: 0.35rem 0.5rem; }
+
+  /* add-to-set chip on archive card */
+  .add-set-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.55rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .add-set-btn:hover { background: rgba(122,179,212,0.12); border-color: var(--accent3); }
+  .add-set-btn.in-set { color: var(--accent3); opacity: 0.45; cursor: default; }
+
+  /* ── SETS VIEW ── */
+  .sets-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 0.6rem;
+  }
+
+  .set-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .set-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: fadeIn 0.18s ease;
+  }
+
+  .set-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s;
+  }
+  .set-card-header:hover { background: var(--surface2); }
+
+  .set-chevron {
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .set-card.open .set-chevron { transform: rotate(90deg); }
+
+  .set-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .set-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .set-header-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
+
+  /* Set body */
+  .set-body { display: none; border-top: 1px solid var(--border); }
+  .set-card.open .set-body { display: block; }
+
+  /* Add song search inside set */
+  .set-addsong {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: var(--surface2);
+  }
+  .set-search-wrap { position: relative; flex: 1; }
+  .set-search-wrap input { padding-left: 2.1rem; font-size: 0.82rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  .set-search-icon { position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 0.8rem; pointer-events: none; }
+
+  .set-search-results {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    z-index: 50;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .set-search-result {
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.1s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .set-search-result:hover { background: var(--surface); }
+  .set-search-result.already-in { opacity: 0.4; cursor: default; pointer-events: none; }
+  .set-search-result .sr-title { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .set-search-result .sr-artist { font-size: 0.72rem; color: var(--text-muted); font-style: italic; white-space: nowrap; flex-shrink: 0; }
+
+  /* Songs inside a set */
+  .set-songs { padding: 0.4rem 0; }
+
+  .set-song-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1rem;
+    transition: background 0.1s;
+  }
+  .set-song-row:hover { background: var(--surface2); }
+  .set-song-row.dragging { opacity: 0.4; }
+  .set-song-row.drag-over { background: rgba(200,169,110,0.08); border-top: 2px solid var(--accent); }
+
+  .drag-handle {
+    color: var(--text-dim);
+    cursor: grab;
+    font-size: 0.85rem;
+    padding: 0.2rem;
+    touch-action: none;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .drag-handle:active { cursor: grabbing; }
+
+  .set-song-info { min-width: 0; }
+  .set-song-title { font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .set-song-artist { font-size: 0.73rem; color: var(--text-muted); font-style: italic; margin-top: 0.1rem; }
+
+  .set-song-actions { display: flex; gap: 0.2rem; align-items: center; flex-shrink: 0; }
+
+  .set-song-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    min-width: 1.4rem;
+    text-align: right;
+  }
+
+  .set-empty {
+    padding: 1.2rem 1rem;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+
+  /* ── MODAL ── */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-bg.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 480px;
+    padding: 1.8rem;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+  }
+  .field { margin-bottom: 1rem; }
+  .field label {
+    display: block;
+    font-size: 0.72rem;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+  }
+  .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.4rem; justify-content: flex-end; }
+
+  /* ── CONFLICT ── */
+  .conflict-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 55vh;
+    overflow-y: auto;
+    margin: 0.8rem 0;
+  }
+  .conflict-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+  }
+  .conflict-item .song-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .conflict-item .song-name span { font-family:'DM Sans',sans-serif; font-style:italic; font-size:0.82rem; color:var(--text-muted); }
+  .conflict-urls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-bottom: 0.6rem; }
+  .conflict-url-box { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0.4rem 0.6rem; }
+  .conflict-url-box.chosen { border-color: var(--accent); }
+  .conflict-url-box .clabel { font-family:'DM Mono',monospace; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); margin-bottom:0.2rem; }
+  .conflict-url-box .curl { font-size:0.72rem; color:var(--text-muted); word-break:break-all; line-height:1.4; }
+  .conflict-url-box .curl a { color:var(--accent2); text-decoration:none; }
+  .conflict-choose { display: flex; gap: 0.4rem; }
+  .conflict-choose button {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.35rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .conflict-choose button.active { background: rgba(200,169,110,0.15); border-color: var(--accent); color: var(--accent); }
+  .conflict-choose button:hover:not(.active) { background: var(--surface2); }
+
+  /* ── EMPTY / HIGHLIGHT ── */
+  .empty { text-align: center; padding: 4rem 1rem; color: var(--text-dim); }
+  .empty .big { font-size: 2.5rem; margin-bottom: 0.8rem; }
+  .empty p { font-size: 0.85rem; line-height: 1.6; }
+  mark { background: rgba(200,169,110,0.25); color: var(--accent); border-radius: 2px; padding: 0 1px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text);
+    font-size: 0.82rem;
+    padding: 0.55rem 1.2rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 300;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── VIEW TOGGLE ── */
+  .view-toggle {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .view-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.3rem 0.65rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .view-toggle-btn:first-child { border-right: 1px solid var(--border); }
+  .view-toggle-btn.active {
+    background: var(--surface2);
+    color: var(--accent);
+  }
+  .view-toggle-btn:hover:not(.active) { color: var(--text-muted); }
+
+  /* ── COMPACT CARDS ── */
+  .song-card.compact {
+    grid-template-columns: 1fr;
+    padding: 0;
+    cursor: pointer;
+  }
+  .song-card.compact:hover {
+    border-color: var(--accent2);
+    background: var(--surface2);
+  }
+  .song-card.compact .song-info {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 0.55rem 0.9rem;
+    min-width: 0;
+  }
+  .song-card.compact .song-title {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    max-width: 55%;
+  }
+  .song-card.compact .song-artist {
+    margin-top: 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .song-card.compact .song-comment {
+    display: none;
+  }
+  .song-card.compact .song-actions {
+    display: none;
+  }
+  .song-card.compact.no-link {
+    cursor: default;
+    opacity: 0.65;
+  }
+  .song-card.compact.no-link:hover {
+    border-color: var(--border);
+    background: var(--surface);
+  }
+  .compact-sep {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 500px) {
+    .header-top { padding: 0.8rem 0.9rem 0; }
+    header h1 { font-size: 1.15rem; }
+    .container { padding: 1rem 0.75rem 4rem; }
+    .song-card { padding: 0.6rem 0.75rem; }
+    .song-title { font-size: 0.9rem; }
+    .modal { padding: 1.3rem; }
+    .conflict-urls { grid-template-columns: 1fr; }
+    .tab { padding: 0.55rem 0.9rem; font-size: 0.68rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>♪ Sangarkiv</h1>
+    <span class="subtitle" id="headerCount"></span>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('archive')">Arkiv</div>
+    <div class="tab" onclick="switchTab('sets')">Sett</div>
+    <div class="tab" onclick="switchTab('system')">System</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ══ ARKIV-VISNING ══ -->
+  <div class="view active" id="view-archive">
+
+    <div class="search-area">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Søk etter sang eller artist…" autocomplete="off" spellcheck="false">
+      </div>
+      <button class="btn" onclick="openSongModal()">+ Legg til</button>
+    </div>
+
+    <div class="toolbar">
+      <span class="count-badge" id="countLabel"></span>
+      <div style="display:flex;gap:0.5rem;align-items:center;">
+        <select class="sort-select" id="sortSelect" onchange="renderArchive()">
+          <option value="title">Sorter: Tittel</option>
+          <option value="artist">Sorter: Artist</option>
+          <option value="added">Sorter: Nyeste</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-toggle-btn active" id="btnViewEdit" onclick="setArchiveView('edit')" title="Redigeringsvisning">✎</button>
+          <button class="view-toggle-btn" id="btnViewCompact" onclick="setArchiveView('compact')" title="Kompaktvisning">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="song-list" id="songList"></div>
+  </div>
+
+  <!-- ══ SETT-VISNING ══ -->
+  <div class="view" id="view-sets">
+    <div class="sets-header">
+      <span class="count-badge" id="setCountLabel"></span>
+      <button class="btn" onclick="openSetModal()">+ Nytt sett</button>
+    </div>
+    <div class="set-list" id="setList"></div>
+  </div>
+
+  <!-- ══ SYSTEM-VISNING ══ -->
+  <div class="view" id="view-system">
+    <div style="display:flex;flex-direction:column;gap:1.2rem;max-width:420px;margin-top:0.5rem;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">GitHub-synk</div>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Arkivet sjekker automatisk <code>data.json</code> ved siden av siden hver gang du åpner den. Trykk her for å sjekke på nytt uten å laste siden.</p>
+        <button class="btn secondary" onclick="syncFromGithub(true)">⟳ Hent oppdateringer</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">Eksport</div>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Last ned alle sanger og sett som <code>data.json</code>. Last den opp til GitHub-repoet ditt (erstatt den gamle) for å gjøre endringene tilgjengelige på alle enheter.</p>
+        <button class="btn" onclick="exportArchive()">↓ Last ned data.json</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">Import</div>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Slå sammen en eksportert JSON-fil med dette arkivet. Nye sanger og sett legges til; eksisterende sett oppdateres.</p>
+        <label class="btn">↑ Importer arkiv<input type="file" accept=".json" style="display:none;" onchange="importArchive(event)"></label>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SONG MODAL -->
+<div class="modal-bg" id="songModalBg" onclick="if(event.target===this)closeSongModal()">
+  <div class="modal">
+    <h2 id="songModalTitle">Legg til sang</h2>
+    <div class="field">
+      <label>Sangtittel *</label>
+      <input type="text" id="fTitle" placeholder="f.eks. Karusell" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Artist</label>
+      <input type="text" id="fArtist" placeholder="f.eks. Åge Aleksandersen" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Lenke til tekst/besifring</label>
+      <input type="url" id="fUrl" placeholder="https://…" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Kommentar</label>
+      <textarea id="fComment" placeholder="Toneart, arrangement, notater…" autocomplete="off" rows="3" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:300;padding:0.65rem 0.9rem;outline:none;resize:vertical;transition:border-color 0.15s;line-height:1.5;"></textarea>
+    </div>
+    <div id="formError" style="color:var(--danger);font-size:0.8rem;margin-top:0.5rem;display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeSongModal()">Avbryt</button>
+      <button class="btn" onclick="saveSong()">Lagre</button>
+    </div>
+  </div>
+</div>
+
+<!-- SET NAME MODAL -->
+<div class="modal-bg" id="setModalBg" onclick="if(event.target===this)closeSetModal()">
+  <div class="modal">
+    <h2 id="setModalTitle">Nytt sett</h2>
+    <div class="field">
+      <label>Navn på settet *</label>
+      <input type="text" id="fSetName" placeholder="f.eks. Konsert 14. juni" autocomplete="off">
+    </div>
+    <div id="setFormError" style="color:var(--danger);font-size:0.8rem;margin-top:0.5rem;display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeSetModal()">Avbryt</button>
+      <button class="btn" onclick="saveSet()">Lagre</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD-TO-SET MODAL (from archive) -->
+<div class="modal-bg" id="addToSetModalBg" onclick="if(event.target===this)closeAddToSetModal()">
+  <div class="modal">
+    <h2 id="addToSetTitle">Legg til i sett</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;" id="addToSetSongName"></p>
+    <div id="addToSetList" style="display:flex;flex-direction:column;gap:0.4rem;max-height:50vh;overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeAddToSetModal()">Lukk</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFLICT MODAL -->
+<div class="modal-bg" id="conflictBg">
+  <div class="modal" style="max-width:560px;">
+    <h2>⚠ Konflikter funnet</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.3rem;">Disse sangene finnes på begge enheter, men med ulik lenke. Velg hvilken du vil beholde:</p>
+    <div class="conflict-list" id="conflictList"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="resolveConflicts('local')">Behold alle lokale</button>
+      <button class="btn secondary" onclick="resolveConflicts('import')">Bruk alle importerte</button>
+      <button class="btn" onclick="applyResolutions()">Bekreft</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
+const STORAGE_KEY = 'sangarkiv_v2';
+let songs = [];
+let sets  = [];
+let editSongId = null;
+let editSetId  = null;
+let addToSetSongId = null;
+let pendingMerge = null;
+let activeTab = 'archive';
+let archiveView = 'edit'; // 'edit' | 'compact'
+
+// drag state
+let dragSrcSetId  = null;
+let dragSrcIndex  = null;
+
+// ══════════════════════════════════════════════════════════
+//  STORAGE
+// ══════════════════════════════════════════════════════════
+function loadData() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      songs = Array.isArray(raw.songs) ? raw.songs : [];
+      sets  = Array.isArray(raw.sets)  ? raw.sets  : [];
+    } else if (Array.isArray(raw)) {
+      // legacy format (just songs array)
+      songs = raw;
+      sets  = [];
+    } else {
+      songs = []; sets = [];
+    }
+  } catch { songs = []; sets = []; }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ songs, sets }));
+}
+
+// ══════════════════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════════════════
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const tabIndex = { archive: 1, sets: 2, system: 3 }[tab] || 1;
+  document.querySelector(`.tab:nth-child(${tabIndex})`).classList.add('active');
+  document.getElementById(`view-${tab}`).classList.add('active');
+  if (tab === 'archive') renderArchive();
+  else if (tab === 'sets') renderSets();
+}
+
+// ══════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escRe(s)   { return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function isValidUrl(s) { try { return ['http:','https:'].includes(new URL(s).protocol); } catch { return false; } }
+
+function highlight(text, q) {
+  if (!q) return escHtml(text);
+  return escHtml(text).replace(new RegExp(`(${escRe(q)})`,'gi'),'<mark>$1</mark>');
+}
+
+function getSong(id) { return songs.find(s => s.id === id); }
+function getSet(id)  { return sets.find(s => s.id === id); }
+
+// ══════════════════════════════════════════════════════════
+//  ARCHIVE VIEW TOGGLE
+// ══════════════════════════════════════════════════════════
+function setArchiveView(mode) {
+  archiveView = mode;
+  document.getElementById('btnViewEdit').classList.toggle('active', mode === 'edit');
+  document.getElementById('btnViewCompact').classList.toggle('active', mode === 'compact');
+  renderArchive();
+}
+
+// ══════════════════════════════════════════════════════════
+//  ARCHIVE RENDER
+// ══════════════════════════════════════════════════════════
+function renderArchive() {
+  loadData();
+  const q    = document.getElementById('searchInput').value.trim().toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+  // find which sets each song belongs to (for badge)
+  const songInSets = {};
+  sets.forEach(set => set.songIds.forEach(id => { songInSets[id] = true; }));
+
+  let filtered = songs.filter(s =>
+    s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
+  );
+  filtered.sort((a,b) => {
+    if (sort==='title')  return a.title.localeCompare(b.title,'no');
+    if (sort==='artist') return a.artist.localeCompare(b.artist,'no');
+    return b.added - a.added;
+  });
+
+  document.getElementById('headerCount').textContent = songs.length + ' sanger';
+  document.getElementById('countLabel').textContent  = q
+    ? `${filtered.length} av ${songs.length} sanger`
+    : `${songs.length} sanger`;
+
+  const list = document.getElementById('songList');
+
+  if (songs.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="big">🎵</div><p>Arkivet er tomt.<br>Klikk <strong>+ Legg til</strong> for å legge inn din første sang.</p></div>`;
+    return;
+  }
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="big">🔍</div><p>Ingen sanger matcher «${escHtml(q)}».</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(s => {
+    const hasSet = songInSets[s.id];
+
+    if (archiveView === 'compact') {
+      const clickAction = s.url
+        ? `onclick="window.open('${escHtml(s.url)}','_blank','noopener')" title="${escHtml(s.title)} — åpne lenke"`
+        : `title="Ingen lenke registrert"`;
+      const noLinkClass = s.url ? '' : ' no-link';
+      return `<div class="song-card compact${hasSet?' in-set':''}${noLinkClass}" data-id="${s.id}" ${clickAction}>
+        <div class="song-info">
+          <div class="song-title">${highlight(s.title,q)}</div>
+          <span class="compact-sep">–</span>
+          <div class="song-artist">${highlight(s.artist,q)}</div>
+        </div>
+      </div>`;
+    }
+
+    const linkHtml = s.url
+      ? `<a class="link-btn" href="${escHtml(s.url)}" target="_blank" rel="noopener">♪ Åpne</a>`
+      : `<span class="no-link">—</span>`;
+
+    const setsBtnHtml = sets.length > 0
+      ? `<button class="add-set-btn" onclick="openAddToSetModal('${s.id}')" title="Legg til i sett">+ Sett</button>`
+      : '';
+
+    return `<div class="song-card${hasSet?' in-set':''}" data-id="${s.id}">
+      <div class="song-info">
+        <div class="song-title">${highlight(s.title,q)}</div>
+        <div class="song-artist">${highlight(s.artist,q)}</div>
+        ${s.comment ? `<div class="song-comment">${highlight(s.comment,q)}</div>` : ''}
+      </div>
+      <div class="song-actions">
+        ${setsBtnHtml}
+        ${linkHtml}
+        <button class="btn secondary" style="padding:0.35rem 0.6rem;font-size:0.75rem;" onclick="openSongModal('${s.id}')">✎</button>
+        <button class="btn danger" onclick="deleteSong('${s.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  SONG MODAL
+// ══════════════════════════════════════════════════════════
+function openSongModal(id) {
+  loadData();
+  editSongId = id || null;
+  const song = id ? getSong(id) : null;
+  document.getElementById('songModalTitle').textContent = id ? 'Rediger sang' : 'Legg til sang';
+  document.getElementById('fTitle').value  = song ? song.title  : '';
+  document.getElementById('fArtist').value = song ? song.artist : '';
+  document.getElementById('fUrl').value     = song ? song.url     : '';
+  document.getElementById('fComment').value  = song ? (song.comment || '') : '';
+  document.getElementById('formError').style.display = 'none';
+  document.getElementById('songModalBg').classList.add('open');
+  setTimeout(() => document.getElementById('fTitle').focus(), 50);
+}
+
+function closeSongModal() {
+  document.getElementById('songModalBg').classList.remove('open');
+  editSongId = null;
+}
+
+function saveSong() {
+  const title  = document.getElementById('fTitle').value.trim();
+  const artist = document.getElementById('fArtist').value.trim();
+  const url     = document.getElementById('fUrl').value.trim();
+  const comment = document.getElementById('fComment').value.trim();
+  const err     = document.getElementById('formError');
+
+  if (!title)  { err.textContent='Sangtittel er påkrevd.'; err.style.display='block'; return; }
+
+  if (url && !isValidUrl(url)) { err.textContent='Lenken ser ikke gyldig ut (husk https://…).'; err.style.display='block'; return; }
+
+  loadData();
+  if (editSongId) {
+    const idx = songs.findIndex(s => s.id === editSongId);
+    if (idx >= 0) Object.assign(songs[idx], { title, artist, url, comment });
+  } else {
+    songs.push({ id: uid(), title, artist, url, comment, added: Date.now() });
+  }
+  saveData();
+  closeSongModal();
+  renderArchive();
+}
+
+function deleteSong(id) {
+  if (!confirm('Slett denne sangen fra arkivet?\n(Den fjernes også fra alle sett.)')) return;
+  loadData();
+  songs = songs.filter(s => s.id !== id);
+  sets.forEach(set => { set.songIds = set.songIds.filter(sid => sid !== id); });
+  saveData();
+  renderArchive();
+}
+
+// ══════════════════════════════════════════════════════════
+//  SETS RENDER
+// ══════════════════════════════════════════════════════════
+function renderSets() {
+  loadData();
+  document.getElementById('setCountLabel').textContent = `${sets.length} sett`;
+
+  const list = document.getElementById('setList');
+  if (sets.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="big">🎼</div><p>Ingen sett ennå.<br>Klikk <strong>+ Nytt sett</strong> for å lage det første.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = sets.map(set => buildSetCard(set)).join('');
+  // restore open state
+  sets.forEach(set => {
+    if (set._open) document.getElementById(`setcard-${set.id}`)?.classList.add('open');
+  });
+  attachDragHandlers();
+}
+
+function buildSetCard(set) {
+  const count = set.songIds.length;
+  const rows = set.songIds.map((sid, i) => {
+    const song = getSong(sid);
+    if (!song) return '';
+    const linkHtml = song.url
+      ? `<a class="link-btn" style="font-size:0.68rem;padding:0.25rem 0.55rem;" href="${escHtml(song.url)}" target="_blank" rel="noopener">♪</a>`
+      : '';
+    return `<div class="set-song-row" data-set="${set.id}" data-index="${i}"
+               draggable="true"
+               ondragstart="onDragStart(event,'${set.id}',${i})"
+               ondragover="onDragOver(event)"
+               ondragleave="onDragLeave(event)"
+               ondrop="onDrop(event,'${set.id}',${i})">
+      <span class="drag-handle" title="Dra for å endre rekkefølge">⠿</span>
+      <div class="set-song-info">
+        <div class="set-song-title">${escHtml(song.title)}</div>
+        <div class="set-song-artist">${escHtml(song.artist)}</div>
+      </div>
+      <div class="set-song-actions">
+        ${linkHtml}
+        <span class="set-song-num">${i+1}</span>
+        <button class="btn danger" style="font-size:0.75rem;" onclick="removeSongFromSet('${set.id}','${sid}')">✕</button>
+      </div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  return `<div class="set-card" id="setcard-${set.id}">
+    <div class="set-card-header" onclick="toggleSet('${set.id}')">
+      <span class="set-chevron">▶</span>
+      <span class="set-name">${escHtml(set.name)}</span>
+      <span class="set-count">${count} sang${count!==1?'er':''}</span>
+      <div class="set-header-actions" onclick="event.stopPropagation()">
+        <button class="btn secondary" style="padding:0.28rem 0.55rem;font-size:0.72rem;" onclick="openSetModal('${set.id}')" title="Gi nytt navn">✎</button>
+        <button class="btn danger" style="font-size:0.75rem;" onclick="deleteSet('${set.id}')">✕</button>
+      </div>
+    </div>
+    <div class="set-body">
+      <div class="set-addsong">
+        <div class="set-search-wrap" style="position:relative;">
+          <span class="set-search-icon">🔍</span>
+          <input type="text" id="setSearch-${set.id}" placeholder="Søk og legg til sang…"
+            autocomplete="off" spellcheck="false"
+            oninput="onSetSearchInput('${set.id}')"
+            onfocus="onSetSearchFocus('${set.id}')"
+            onblur="onSetSearchBlur('${set.id}')">
+          <div class="set-search-results" id="setResults-${set.id}" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="set-songs" id="setSongs-${set.id}">
+        ${rows || `<div class="set-empty">Ingen sanger ennå — søk over for å legge til.</div>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleSet(setId) {
+  loadData();
+  const card = document.getElementById(`setcard-${setId}`);
+  const isOpen = card.classList.toggle('open');
+  const set = getSet(setId);
+  if (set) set._open = isOpen;
+  saveData();
+}
+
+// ══════════════════════════════════════════════════════════
+//  SET MODAL (name)
+// ══════════════════════════════════════════════════════════
+function openSetModal(id) {
+  loadData();
+  editSetId = id || null;
+  const set = id ? getSet(id) : null;
+  document.getElementById('setModalTitle').textContent = id ? 'Gi nytt navn' : 'Nytt sett';
+  document.getElementById('fSetName').value = set ? set.name : '';
+  document.getElementById('setFormError').style.display = 'none';
+  document.getElementById('setModalBg').classList.add('open');
+  setTimeout(() => document.getElementById('fSetName').focus(), 50);
+}
+
+function closeSetModal() {
+  document.getElementById('setModalBg').classList.remove('open');
+  editSetId = null;
+}
+
+function saveSet() {
+  const name = document.getElementById('fSetName').value.trim();
+  const err  = document.getElementById('setFormError');
+  if (!name) { err.textContent='Navn er påkrevd.'; err.style.display='block'; return; }
+
+  loadData();
+  if (editSetId) {
+    const set = getSet(editSetId);
+    if (set) set.name = name;
+  } else {
+    sets.push({ id: uid(), name, songIds: [], _open: true });
+  }
+  saveData();
+  closeSetModal();
+  renderSets();
+}
+
+function deleteSet(id) {
+  if (!confirm('Slette dette settet? (Sangene i arkivet beholdes.)')) return;
+  loadData();
+  sets = sets.filter(s => s.id !== id);
+  saveData();
+  renderSets();
+}
+
+// ══════════════════════════════════════════════════════════
+//  ADD SONG TO SET (inline search)
+// ══════════════════════════════════════════════════════════
+let setSearchBlurTimer = {};
+
+function onSetSearchInput(setId) {
+  showSetResults(setId);
+}
+function onSetSearchFocus(setId) {
+  clearTimeout(setSearchBlurTimer[setId]);
+  showSetResults(setId);
+}
+function onSetSearchBlur(setId) {
+  setSearchBlurTimer[setId] = setTimeout(() => hideSetResults(setId), 200);
+}
+
+function showSetResults(setId) {
+  loadData();
+  const q   = (document.getElementById(`setSearch-${setId}`)?.value || '').trim().toLowerCase();
+  const set = getSet(setId);
+  if (!set) return;
+  const inSet = new Set(set.songIds);
+
+  let matches = songs.filter(s =>
+    !q || s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
+  ).slice(0, 20);
+
+  const box = document.getElementById(`setResults-${setId}`);
+  if (!box) return;
+
+  if (matches.length === 0) { box.style.display='none'; return; }
+
+  box.innerHTML = matches.map(s => {
+    const already = inSet.has(s.id);
+    return `<div class="set-search-result${already?' already-in':''}"
+      onmousedown="addSongToSet('${setId}','${s.id}')">
+      <span class="sr-title">${escHtml(s.title)}</span>
+      <span class="sr-artist">${escHtml(s.artist)}</span>
+    </div>`;
+  }).join('');
+  box.style.display = 'block';
+}
+
+function hideSetResults(setId) {
+  const box = document.getElementById(`setResults-${setId}`);
+  if (box) box.style.display = 'none';
+}
+
+function addSongToSet(setId, songId) {
+  loadData();
+  const set = getSet(setId);
+  if (!set) return;
+  if (set.songIds.includes(songId)) { showToast('Sangen er allerede i settet.'); return; }
+  set.songIds.push(songId);
+  saveData();
+  // clear search
+  const inp = document.getElementById(`setSearch-${setId}`);
+  if (inp) inp.value = '';
+  hideSetResults(setId);
+  renderSets();
+  // re-open
+  setTimeout(() => {
+    const card = document.getElementById(`setcard-${setId}`);
+    if (card && !card.classList.contains('open')) card.classList.add('open');
+  }, 10);
+}
+
+function removeSongFromSet(setId, songId) {
+  loadData();
+  const set = getSet(setId);
+  if (!set) return;
+  set.songIds = set.songIds.filter(id => id !== songId);
+  saveData();
+  renderSets();
+}
+
+// ══════════════════════════════════════════════════════════
+//  ADD TO SET FROM ARCHIVE (modal)
+// ══════════════════════════════════════════════════════════
+function openAddToSetModal(songId) {
+  loadData();
+  addToSetSongId = songId;
+  const song = getSong(songId);
+  document.getElementById('addToSetSongName').textContent = song ? `«${song.title}» — ${song.artist}` : '';
+
+  const listEl = document.getElementById('addToSetList');
+  if (sets.length === 0) {
+    listEl.innerHTML = `<p style="font-size:0.82rem;color:var(--text-dim);">Ingen sett ennå. Gå til <strong>Sett</strong>-fanen for å lage et.</p>`;
+  } else {
+    listEl.innerHTML = sets.map(set => {
+      const inSet = set.songIds.includes(songId);
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);">
+        <span style="font-family:'Playfair Display',serif;font-size:0.9rem;">${escHtml(set.name)}</span>
+        ${inSet
+          ? `<span style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text-dim);">allerede i settet</span>`
+          : `<button class="btn" style="padding:0.3rem 0.8rem;font-size:0.78rem;" onclick="addSongToSetFromModal('${set.id}')">+ Legg til</button>`
+        }
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('addToSetModalBg').classList.add('open');
+}
+
+function addSongToSetFromModal(setId) {
+  loadData();
+  const set = getSet(setId);
+  if (!set || set.songIds.includes(addToSetSongId)) return;
+  set.songIds.push(addToSetSongId);
+  saveData();
+  closeAddToSetModal();
+  renderArchive();
+  showToast(`Lagt til i «${set.name}» ✓`);
+}
+
+function closeAddToSetModal() {
+  document.getElementById('addToSetModalBg').classList.remove('open');
+  addToSetSongId = null;
+}
+
+// ══════════════════════════════════════════════════════════
+//  DRAG & DROP (reorder in set)
+// ══════════════════════════════════════════════════════════
+function attachDragHandlers() {
+  // handled inline via ondragstart etc. on set-song-row elements
+}
+
+function onDragStart(e, setId, index) {
+  dragSrcSetId  = setId;
+  dragSrcIndex  = index;
+  e.dataTransfer.effectAllowed = 'move';
+  e.currentTarget.classList.add('dragging');
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function onDrop(e, setId, targetIndex) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (dragSrcSetId !== setId || dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+
+  loadData();
+  const set = getSet(setId);
+  if (!set) return;
+  const ids = set.songIds;
+  const moved = ids.splice(dragSrcIndex, 1)[0];
+  ids.splice(targetIndex, 0, moved);
+  saveData();
+  renderSets();
+}
+
+// Touch-based reorder (mobile)
+let touchSrc = null;
+document.addEventListener('touchstart', e => {
+  const handle = e.target.closest('.drag-handle');
+  if (!handle) return;
+  const row = handle.closest('.set-song-row');
+  if (!row) return;
+  touchSrc = { row, setId: row.dataset.set, index: parseInt(row.dataset.index) };
+  row.classList.add('dragging');
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  if (!touchSrc) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const target = el?.closest('.set-song-row');
+  document.querySelectorAll('.set-song-row.drag-over').forEach(r => r.classList.remove('drag-over'));
+  if (target && target !== touchSrc.row) target.classList.add('drag-over');
+}, { passive: false });
+
+document.addEventListener('touchend', e => {
+  if (!touchSrc) return;
+  touchSrc.row.classList.remove('dragging');
+  const over = document.querySelector('.set-song-row.drag-over');
+  if (over) {
+    over.classList.remove('drag-over');
+    const targetIndex = parseInt(over.dataset.index);
+    if (touchSrc.setId === over.dataset.set && touchSrc.index !== targetIndex) {
+      loadData();
+      const set = getSet(touchSrc.setId);
+      if (set) {
+        const moved = set.songIds.splice(touchSrc.index, 1)[0];
+        set.songIds.splice(targetIndex, 0, moved);
+        saveData();
+        renderSets();
+      }
+    }
+  }
+  touchSrc = null;
+});
+
+// ══════════════════════════════════════════════════════════
+//  EXPORT / IMPORT
+// ══════════════════════════════════════════════════════════
+function exportArchive() {
+  loadData();
+  const blob = new Blob([JSON.stringify({ songs, sets }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `data.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('data.json lastet ned — last den opp til GitHub-repoet ditt ✓');
+}
+
+function importArchive(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    let data;
+    try { data = JSON.parse(e.target.result); } catch { showToast('Ugyldig JSON-fil.'); return; }
+    mergeIncomingData(data, { silentIfEmpty: false });
+  };
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════════════════════
+//  MERGE (shared by file-import and GitHub sync)
+// ══════════════════════════════════════════════════════════
+function mergeIncomingData(data, opts = {}) {
+  const { silentIfEmpty = true } = opts;
+
+  // support both old (array) and new ({songs,sets}) format
+  let importedSongs, importedSets;
+  if (Array.isArray(data)) {
+    importedSongs = data;
+    importedSets  = [];
+  } else if (data && Array.isArray(data.songs)) {
+    importedSongs = data.songs;
+    importedSets  = Array.isArray(data.sets) ? data.sets : [];
+  } else { if (!silentIfEmpty) showToast('Ugyldig fil – ukjent format.'); return; }
+
+  importedSongs = importedSongs.filter(s => s && typeof s.title==='string' && typeof s.artist==='string');
+  if (importedSongs.length === 0) { if (!silentIfEmpty) showToast('Ingen gyldige sanger i filen.'); return; }
+
+  loadData();
+  const key = s => s.title.trim().toLowerCase() + '||' + s.artist.trim().toLowerCase();
+  const localMap = new Map(songs.map(s => [key(s), s]));
+
+  const toAdd = [];
+  const conflicts = [];
+  const idRemap = {}; // old imported id -> local id (for sets)
+
+  for (const imp of importedSongs) {
+    const k = key(imp);
+    if (!localMap.has(k)) {
+      const newId = uid();
+      idRemap[imp.id] = newId;
+      toAdd.push({ ...imp, id: newId, added: imp.added || Date.now() });
+    } else {
+      const local = localMap.get(k);
+      idRemap[imp.id] = local.id;
+      const localUrl = (local.url||'').trim();
+      const impUrl   = (imp.url  ||'').trim();
+      if (localUrl !== impUrl) conflicts.push({ local, imported: imp, chosen: 'local' });
+    }
+  }
+
+  // merge sets:
+  //   - existing set (same name) → union of song IDs (add songs not already there)
+  //   - new set (name not found locally) → add it
+  const localSetByName = new Map(sets.map(s => [s.name.trim().toLowerCase(), s]));
+  const setsToAdd = [];      // brand new sets
+  const setsToMerge = [];    // { localSet, newSongIds }
+
+  for (const imp of importedSets) {
+    if (!imp || typeof imp.name !== 'string') continue;
+    const remappedIds = (imp.songIds||[]).map(id => idRemap[id]).filter(Boolean);
+    const nameKey = imp.name.trim().toLowerCase();
+    if (localSetByName.has(nameKey)) {
+      const localSet = localSetByName.get(nameKey);
+      const existing = new Set(localSet.songIds);
+      const newIds = remappedIds.filter(id => !existing.has(id));
+      if (newIds.length > 0) setsToMerge.push({ localSet, newIds });
+    } else {
+      setsToAdd.push({ id: uid(), name: imp.name, songIds: remappedIds, _open: false });
+    }
+  }
+
+  if (toAdd.length === 0 && conflicts.length === 0 && setsToAdd.length === 0 && setsToMerge.length === 0) {
+    if (!silentIfEmpty) showToast('Ingen nye data å importere.');
+    return;
+  }
+
+  pendingMerge = { toAdd, conflicts, setsToAdd, setsToMerge };
+
+  if (conflicts.length === 0) finalizeMerge(toAdd, [], setsToAdd, setsToMerge);
+  else openConflictModal();
+}
+
+// ══════════════════════════════════════════════════════════
+//  GITHUB SYNC — pull data.json committed to the repo
+// ══════════════════════════════════════════════════════════
+async function syncFromGithub(manual) {
+  try {
+    const res = await fetch('data.json', { cache: 'no-store' });
+    if (!res.ok) { if (manual) showToast('Fant ingen data.json ved siden av siden.'); return; }
+    const remote = await res.json();
+    mergeIncomingData(remote, { silentIfEmpty: !manual });
+    if (manual) showToast('Sjekket data.json for oppdateringer ✓');
+  } catch (e) {
+    if (manual) showToast('Kunne ikke hente data.json (offline, eller siden kjører lokalt).');
+  }
+}
+
+function finalizeMerge(toAdd, resolvedConflicts, setsToAdd, setsToMerge) {
+  loadData();
+  toAdd.forEach(s => songs.push(s));
+  resolvedConflicts.forEach(c => {
+    if (c.chosen === 'import') {
+      const idx = songs.findIndex(s => s.id === c.local.id);
+      if (idx >= 0) songs[idx].url = (c.imported.url||'').trim();
+    }
+  });
+  // add brand-new sets
+  (setsToAdd||[]).forEach(s => sets.push(s));
+  // merge songs into existing sets
+  let mergedSongsTotal = 0;
+  (setsToMerge||[]).forEach(({ localSet, newIds }) => {
+    const set = sets.find(s => s.id === localSet.id);
+    if (set) { set.songIds.push(...newIds); mergedSongsTotal += newIds.length; }
+  });
+  saveData();
+  if (activeTab === 'archive') renderArchive(); else renderSets();
+
+  const a = toAdd.length, r = resolvedConflicts.length;
+  const st = (setsToAdd||[]).length, sm = (setsToMerge||[]).length;
+  const parts = [];
+  if (a > 0)               parts.push(`${a} nye sanger`);
+  if (r > 0)               parts.push(`${r} konflikter løst`);
+  if (st > 0)              parts.push(`${st} nye sett`);
+  if (mergedSongsTotal > 0) parts.push(`${mergedSongsTotal} sanger lagt til i ${sm} sett`);
+  showToast(parts.length ? parts.join(', ') + ' ✓' : 'Ingen nye data å importere.');
+}
+
+// ── Conflict modal ──
+function openConflictModal() {
+  const list = document.getElementById('conflictList');
+  list.innerHTML = pendingMerge.conflicts.map((c,i) => {
+    const lu = c.local.url||'', iu = c.imported.url||'';
+    return `<div class="conflict-item">
+      <div class="song-name">${escHtml(c.local.title)} <span>— ${escHtml(c.local.artist)}</span></div>
+      <div class="conflict-urls">
+        <div class="conflict-url-box chosen" id="box_local_${i}">
+          <div class="clabel">Lokal lenke</div>
+          <div class="curl">${lu?`<a href="${escHtml(lu)}" target="_blank" rel="noopener">${escHtml(lu)}</a>`:'<em>ingen lenke</em>'}</div>
+        </div>
+        <div class="conflict-url-box" id="box_import_${i}">
+          <div class="clabel">Importert lenke</div>
+          <div class="curl">${iu?`<a href="${escHtml(iu)}" target="_blank" rel="noopener">${escHtml(iu)}</a>`:'<em>ingen lenke</em>'}</div>
+        </div>
+      </div>
+      <div class="conflict-choose">
+        <button id="btn_local_${i}" class="active" onclick="pickConflict(${i},'local')">Behold lokal</button>
+        <button id="btn_import_${i}" onclick="pickConflict(${i},'import')">Bruk importert</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('conflictBg').classList.add('open');
+}
+
+function pickConflict(i, choice) {
+  pendingMerge.conflicts[i].chosen = choice;
+  document.getElementById(`btn_local_${i}`).classList.toggle('active', choice==='local');
+  document.getElementById(`btn_import_${i}`).classList.toggle('active', choice==='import');
+  document.getElementById(`box_local_${i}`).classList.toggle('chosen', choice==='local');
+  document.getElementById(`box_import_${i}`).classList.toggle('chosen', choice==='import');
+}
+function resolveConflicts(choice) { pendingMerge.conflicts.forEach((_,i) => pickConflict(i,choice)); }
+function applyResolutions() {
+  document.getElementById('conflictBg').classList.remove('open');
+  finalizeMerge(pendingMerge.toAdd, pendingMerge.conflicts, pendingMerge.setsToAdd, pendingMerge.setsToMerge);
+  pendingMerge = null;
+}
+
+// ══════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ══════════════════════════════════════════════════════════
+//  KEYBOARD
+// ══════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeSongModal(); closeSetModal(); closeAddToSetModal();
+    document.getElementById('conflictBg').classList.remove('open');
+  }
+  if (e.key === 'Enter') {
+    if (document.getElementById('songModalBg').classList.contains('open') && document.activeElement.tagName !== 'BUTTON') saveSong();
+    if (document.getElementById('setModalBg').classList.contains('open')  && document.activeElement.tagName !== 'BUTTON') saveSet();
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', renderArchive);
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+loadData();
+renderArchive();
+syncFromGithub(false);
+</script>
+</body>
+</html>
