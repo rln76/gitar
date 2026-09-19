@@ -699,6 +699,10 @@
     user-select: none;
   }
 
+  .ctl-group button.ctl-toggle { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; }
+  .ctl-group button.ctl-toggle.on  { color: var(--accent); }
+  .ctl-group button.ctl-toggle.off { color: var(--text-dim); text-decoration: line-through; }
+
   .reader-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .reader-page {
     max-width: 820px;
@@ -730,7 +734,7 @@
 
   .cp-body { margin-top: 1.6rem; }
   .cp-block { margin-bottom: 1.5rem; }
-  .cp-chorus { border-left: 3px solid var(--accent3); padding-left: 1rem; }
+  .cp-k-chorus { border-left: 3px solid var(--accent3); padding-left: 1rem; }
   .cp-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.4rem; }
 
   .cp-line { margin: 0.1rem 0; }
@@ -775,8 +779,16 @@
   .cp-comment.box { border: 1px solid var(--border); border-radius: var(--radius); }
   .cp-block .cp-comment { margin: 0.3rem 0; }
 
+  /* Uten besifring: bare tekst */
+  .hide-chords .cp-chord,
+  .hide-chords .cp-chordonly,
+  .hide-chords .cp-k-tab,
+  .hide-chords .cp-k-instr { display: none; }
+
   @media (max-width: 500px) {
     .reader-bar-title { display: none; }
+    .reader-bar { flex-wrap: wrap; }
+    .ctl-group button { padding: 0.4rem 0.55rem; }
     .reader-page { padding: 1.2rem 0.9rem 4rem; }
     .cp-title { font-size: 1.45rem; }
   }
@@ -955,6 +967,9 @@
     <button class="btn secondary" style="padding:0.4rem 0.75rem;font-size:0.8rem;" onclick="closeReader()" title="Lukk (Esc)">✕ Lukk</button>
     <div class="reader-bar-title" id="readerBarTitle"></div>
     <div class="reader-ctl">
+      <div class="ctl-group">
+        <button id="readerChordsBtn" class="ctl-toggle on" onclick="readerToggleChords()" aria-pressed="true" title="Skjul akkorder">Akkorder</button>
+      </div>
       <div class="ctl-group" title="Transponer (halvtoner)">
         <button onclick="readerTranspose(-1)" aria-label="Ned en halvtone">−</button>
         <span class="ctl-val" id="readerSemis" onclick="readerResetTranspose()" title="Trykk for å nullstille">0</span>
@@ -1533,6 +1548,7 @@ document.addEventListener('touchend', e => {
 // ══════════════════════════════════════════════════════════
 const CP_CACHE  = 'sangarkiv_cp:';      // offline-kopi av hentede filer
 const CP_FS_KEY = 'sangarkiv_cp_fs';    // valgt tekststørrelse
+const CP_CH_KEY = 'sangarkiv_cp_chords'; // '0' = akkorder skjult
 
 const CP_ALIASES = {
   t:'title', st:'subtitle', su:'subtitle',
@@ -1695,6 +1711,11 @@ function cpChordHtml(ch, n, ctx) {
   return escHtml(cpTranspose(ch.trim(), n, ctx));
 }
 
+// Linje som bare består av akkorder (intro, mellomspill)
+function cpChordOnly(line) {
+  return /\[[^\]]*\]/.test(line) && line.replace(/\[[^\]]*\]/g, '').trim() === '';
+}
+
 // Én tekstlinje med [akkorder] → akkorder over ordene.
 // Hvert ord (med akkorder midt i ordet) er en udelelig gruppe, slik at linjer brytes mellom ord.
 function cpRenderLine(line, n, ctx) {
@@ -1731,7 +1752,7 @@ function cpRenderLine(line, n, ctx) {
       `<span class="cp-seg"><span class="cp-chord">${cpChordHtml(a.chord, n, ctx)}</span><span class="cp-lyr">${escHtml(a.text)}</span></span>`
     ).join('') + '</span>'
   ).join('');
-  return `<div class="cp-line">${html}</div>`;
+  return `<div class="cp-line${cpChordOnly(line) ? ' cp-chordonly' : ''}">${html}</div>`;
 }
 
 function cpCommentHtml(style, text) {
@@ -1751,7 +1772,9 @@ function cpRenderBlock(b, n, ctx) {
       : cpRenderLine(l, n, ctx)
     ).join('');
   }
-  return `<section class="cp-block cp-${b.kind}">${label ? `<div class="cp-label">${escHtml(label)}</div>` : ''}${body}</section>`;
+  const strs = b.kind === 'tab' ? [] : b.lines.filter(l => typeof l === 'string' && l.trim() !== '');
+  const instr = strs.length > 0 && strs.every(cpChordOnly);   // seksjon med bare akkorder
+  return `<section class="cp-block cp-k-${b.kind}${instr ? ' cp-k-instr' : ''}">${label ? `<div class="cp-label">${escHtml(label)}</div>` : ''}${body}</section>`;
 }
 
 function cpRenderBody(parsed, n) {
@@ -1773,6 +1796,9 @@ try {
   if (v >= 0.8 && v <= 2) readerFs = v;
 } catch {}
 
+let readerChords = true;   // false = bare tekst (for de som skal synge)
+try { readerChords = localStorage.getItem(CP_CH_KEY) !== '0'; } catch {}
+
 function cpFetchUrl(path) { return path.split('/').map(encodeURIComponent).join('/'); }
 
 async function openReader(songId) {
@@ -1788,6 +1814,7 @@ async function openReader(songId) {
   document.getElementById('readerScroll').scrollTop = 0;
   document.body.style.overflow = 'hidden';
   applyReaderFont();
+  applyReaderChords();
 
   let text = null, fromCache = false;
   try {
@@ -1857,6 +1884,20 @@ function readerFont(d) {
   readerFs = Math.max(0.8, Math.min(2, Math.round((readerFs + d * 0.1) * 100) / 100));
   applyReaderFont();
   try { localStorage.setItem(CP_FS_KEY, String(readerFs)); } catch {}
+}
+
+function applyReaderChords() {
+  document.getElementById('readerPage').classList.toggle('hide-chords', !readerChords);
+  const b = document.getElementById('readerChordsBtn');
+  b.classList.toggle('on', readerChords);
+  b.classList.toggle('off', !readerChords);
+  b.setAttribute('aria-pressed', String(readerChords));
+  b.title = readerChords ? 'Skjul akkorder' : 'Vis akkorder';
+}
+function readerToggleChords() {
+  readerChords = !readerChords;
+  applyReaderChords();
+  try { localStorage.setItem(CP_CH_KEY, readerChords ? '1' : '0'); } catch {}
 }
 
 function closeReader() {
