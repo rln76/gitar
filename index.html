@@ -634,6 +634,153 @@
     flex-shrink: 0;
   }
 
+  /* ── CHORDPRO-LESER ── */
+  .link-btn.read { color: var(--accent); }
+  .link-btn.read:hover { background: rgba(200,169,110,0.12); border-color: var(--accent); }
+
+  .reader-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 250;
+    flex-direction: column;
+  }
+  .reader-bg.open { display: flex; }
+
+  .reader-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .reader-bar-title {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .reader-ctl { display: flex; gap: 0.5rem; margin-left: auto; }
+  .ctl-group {
+    display: flex;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .ctl-group button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+  .ctl-group button:hover { color: var(--accent); background: var(--surface); }
+  .ctl-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+    min-width: 2.3rem;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .reader-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .reader-page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.6rem 1.2rem 5rem;
+    font-size: var(--cp-fs, 1.05rem);
+  }
+  .cp-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--accent);
+  }
+  .cp-sub { font-size: 0.9rem; color: var(--text-muted); font-style: italic; margin-top: 0.3rem; }
+  .cp-meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
+  .cp-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.2rem 0.7rem;
+  }
+  .cp-chip b { color: var(--accent); font-weight: 500; }
+  .cp-foot { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.82rem; }
+  .cp-foot a { color: var(--accent2); text-decoration: none; }
+
+  .cp-body { margin-top: 1.6rem; }
+  .cp-block { margin-bottom: 1.5rem; }
+  .cp-chorus { border-left: 3px solid var(--accent3); padding-left: 1rem; }
+  .cp-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+
+  .cp-line { margin: 0.1rem 0; }
+  .cp-w { display: inline-block; white-space: nowrap; vertical-align: top; }
+  .cp-seg { display: inline-flex; flex-direction: column; vertical-align: top; }
+  .cp-chord {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 0.82em;
+    color: var(--accent);
+    min-height: 1.45em;
+    line-height: 1.45em;
+    padding-right: 0.35em;
+    white-space: pre;
+  }
+  .cp-ann { font-family: 'DM Sans', sans-serif; font-weight: 300; font-style: italic; color: var(--text-muted); }
+  .cp-lyr { white-space: pre; color: var(--text); font-weight: 400; line-height: 1.35; }
+  .cp-plain { white-space: pre-wrap; color: var(--text); font-weight: 400; line-height: 1.4; margin: 0.1rem 0; }
+  .cp-gap { height: 0.8rem; }
+  .cp-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8em;
+    line-height: 1.3;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+    overflow-x: auto;
+  }
+  .cp-comment {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border-left: 2px solid var(--border);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.4rem 0.8rem;
+    margin: 0 0 1.2rem;
+    line-height: 1.45;
+  }
+  .cp-comment.italic { font-style: italic; background: none; border-left: none; padding: 0.1rem 0; }
+  .cp-comment.box { border: 1px solid var(--border); border-radius: var(--radius); }
+  .cp-block .cp-comment { margin: 0.3rem 0; }
+
+  @media (max-width: 500px) {
+    .reader-bar-title { display: none; }
+    .reader-page { padding: 1.2rem 0.9rem 4rem; }
+    .cp-title { font-size: 1.45rem; }
+  }
+
   /* ── MOBILE ── */
   @media (max-width: 500px) {
     .header-top { padding: 0.8rem 0.9rem 0; }
@@ -710,6 +857,10 @@
         <button class="btn secondary" onclick="syncFromGithub(true)">⟳ Hent oppdateringer</button>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">ChordPro</div>
+        <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;">Legg ChordPro-filer i repoet (f.eks. mappen <code>sanger/</code>) og skriv stien i feltet «ChordPro-fil» når du redigerer sangen. Sangen får da en <strong>♫ Vis</strong>-knapp som viser akkordene over teksten, med transponering og valg av tekststørrelse.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
         <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">Eksport</div>
         <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Last ned alle sanger og sett som <code>data.json</code>. Last den opp til GitHub-repoet ditt (erstatt den gamle) for å gjøre endringene tilgjengelige på alle enheter.</p>
         <button class="btn" onclick="exportArchive()">↓ Last ned data.json</button>
@@ -739,6 +890,10 @@
     <div class="field">
       <label>Lenke til tekst/besifring</label>
       <input type="url" id="fUrl" placeholder="https://…" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>ChordPro-fil i repoet (valgfritt)</label>
+      <input type="text" id="fFile" placeholder="sanger/Grimstadvise_C.txt" autocomplete="off" spellcheck="false">
     </div>
     <div class="field">
       <label>Kommentar</label>
@@ -791,6 +946,28 @@
       <button class="btn secondary" onclick="resolveConflicts('import')">Bruk alle importerte</button>
       <button class="btn" onclick="applyResolutions()">Bekreft</button>
     </div>
+  </div>
+</div>
+
+<!-- CHORDPRO-LESER -->
+<div class="reader-bg" id="readerBg">
+  <div class="reader-bar">
+    <button class="btn secondary" style="padding:0.4rem 0.75rem;font-size:0.8rem;" onclick="closeReader()" title="Lukk (Esc)">✕ Lukk</button>
+    <div class="reader-bar-title" id="readerBarTitle"></div>
+    <div class="reader-ctl">
+      <div class="ctl-group" title="Transponer (halvtoner)">
+        <button onclick="readerTranspose(-1)" aria-label="Ned en halvtone">−</button>
+        <span class="ctl-val" id="readerSemis" onclick="readerResetTranspose()" title="Trykk for å nullstille">0</span>
+        <button onclick="readerTranspose(1)" aria-label="Opp en halvtone">+</button>
+      </div>
+      <div class="ctl-group" title="Tekststørrelse">
+        <button onclick="readerFont(-1)" aria-label="Mindre tekst">A−</button>
+        <button onclick="readerFont(1)" aria-label="Større tekst">A+</button>
+      </div>
+    </div>
+  </div>
+  <div class="reader-scroll" id="readerScroll">
+    <div class="reader-page" id="readerPage"></div>
   </div>
 </div>
 
@@ -918,10 +1095,12 @@ function renderArchive() {
     const hasSet = songInSets[s.id];
 
     if (archiveView === 'compact') {
-      const clickAction = s.url
-        ? `onclick="window.open('${escHtml(s.url)}','_blank','noopener')" title="${escHtml(s.title)} — åpne lenke"`
-        : `title="Ingen lenke registrert"`;
-      const noLinkClass = s.url ? '' : ' no-link';
+      const clickAction = s.file
+        ? `onclick="openReader('${s.id}')" title="${escHtml(s.title)} — vis med akkorder"`
+        : s.url
+          ? `onclick="window.open('${escHtml(s.url)}','_blank','noopener')" title="${escHtml(s.title)} — åpne lenke"`
+          : `title="Ingen lenke registrert"`;
+      const noLinkClass = (s.url || s.file) ? '' : ' no-link';
       return `<div class="song-card compact${hasSet?' in-set':''}${noLinkClass}" data-id="${s.id}" ${clickAction}>
         <div class="song-info">
           <div class="song-title">${highlight(s.title,q)}</div>
@@ -931,9 +1110,12 @@ function renderArchive() {
       </div>`;
     }
 
+    const readHtml = s.file
+      ? `<button class="link-btn read" onclick="openReader('${s.id}')" title="Vis med akkorder over teksten">♫ Vis</button>`
+      : '';
     const linkHtml = s.url
-      ? `<a class="link-btn" href="${escHtml(s.url)}" target="_blank" rel="noopener">♪ Åpne</a>`
-      : `<span class="no-link">—</span>`;
+      ? `<a class="link-btn" href="${escHtml(s.url)}" target="_blank" rel="noopener">${s.file ? '↗ Lenke' : '♪ Åpne'}</a>`
+      : (s.file ? '' : `<span class="no-link">—</span>`);
 
     const setsBtnHtml = sets.length > 0
       ? `<button class="add-set-btn" onclick="openAddToSetModal('${s.id}')" title="Legg til i sett">+ Sett</button>`
@@ -947,7 +1129,7 @@ function renderArchive() {
       </div>
       <div class="song-actions">
         ${setsBtnHtml}
-        ${linkHtml}
+        ${readHtml}${linkHtml}
         <button class="btn secondary" style="padding:0.35rem 0.6rem;font-size:0.75rem;" onclick="openSongModal('${s.id}')">✎</button>
         <button class="btn danger" onclick="deleteSong('${s.id}')">✕</button>
       </div>
@@ -967,6 +1149,7 @@ function openSongModal(id) {
   document.getElementById('fArtist').value = song ? song.artist : '';
   document.getElementById('fUrl').value     = song ? song.url     : '';
   document.getElementById('fComment').value  = song ? (song.comment || '') : '';
+  document.getElementById('fFile').value     = song ? (song.file || '') : '';
   document.getElementById('formError').style.display = 'none';
   document.getElementById('songModalBg').classList.add('open');
   setTimeout(() => document.getElementById('fTitle').focus(), 50);
@@ -982,18 +1165,21 @@ function saveSong() {
   const artist = document.getElementById('fArtist').value.trim();
   const url     = document.getElementById('fUrl').value.trim();
   const comment = document.getElementById('fComment').value.trim();
+  const file    = document.getElementById('fFile').value.trim().replace(/^\.?\//, '');
   const err     = document.getElementById('formError');
 
   if (!title)  { err.textContent='Sangtittel er påkrevd.'; err.style.display='block'; return; }
 
   if (url && !isValidUrl(url)) { err.textContent='Lenken ser ikke gyldig ut (husk https://…).'; err.style.display='block'; return; }
 
+  if (/^([a-z][a-z0-9+.-]*:)?\/\//i.test(file)) { err.textContent='ChordPro-filen må ligge i repoet – skriv en sti som sanger/navn.txt. Eksterne lenker (f.eks. Jottacloud) legger du i «Lenke»-feltet.'; err.style.display='block'; return; }
+
   loadData();
   if (editSongId) {
     const idx = songs.findIndex(s => s.id === editSongId);
-    if (idx >= 0) Object.assign(songs[idx], { title, artist, url, comment });
+    if (idx >= 0) Object.assign(songs[idx], { title, artist, url, comment, file });
   } else {
-    songs.push({ id: uid(), title, artist, url, comment, added: Date.now() });
+    songs.push({ id: uid(), title, artist, url, comment, file, added: Date.now() });
   }
   saveData();
   closeSongModal();
@@ -1035,6 +1221,9 @@ function buildSetCard(set) {
   const rows = set.songIds.map((sid, i) => {
     const song = getSong(sid);
     if (!song) return '';
+    const readHtml = song.file
+      ? `<button class="link-btn read" style="font-size:0.68rem;padding:0.25rem 0.55rem;" onclick="openReader('${sid}')" title="Vis med akkorder">♫</button>`
+      : '';
     const linkHtml = song.url
       ? `<a class="link-btn" style="font-size:0.68rem;padding:0.25rem 0.55rem;" href="${escHtml(song.url)}" target="_blank" rel="noopener">♪</a>`
       : '';
@@ -1050,7 +1239,7 @@ function buildSetCard(set) {
         <div class="set-song-artist">${escHtml(song.artist)}</div>
       </div>
       <div class="set-song-actions">
-        ${linkHtml}
+        ${readHtml}${linkHtml}
         <span class="set-song-num">${i+1}</span>
         <button class="btn danger" style="font-size:0.75rem;" onclick="removeSongFromSet('${set.id}','${sid}')">✕</button>
       </div>
@@ -1340,6 +1529,344 @@ document.addEventListener('touchend', e => {
 });
 
 // ══════════════════════════════════════════════════════════
+//  CHORDPRO — lesing, transponering og visning
+// ══════════════════════════════════════════════════════════
+const CP_CACHE  = 'sangarkiv_cp:';      // offline-kopi av hentede filer
+const CP_FS_KEY = 'sangarkiv_cp_fs';    // valgt tekststørrelse
+
+const CP_ALIASES = {
+  t:'title', st:'subtitle', su:'subtitle',
+  c:'comment', ci:'comment_italic', cb:'comment_box',
+  soc:'start_of_chorus', eoc:'end_of_chorus',
+  sov:'start_of_verse',  eov:'end_of_verse',
+  sob:'start_of_bridge', eob:'end_of_bridge',
+  sot:'start_of_tab',    eot:'end_of_tab',
+  sog:'start_of_grid',   eog:'end_of_grid'
+};
+
+// {start_of_chorus: label="Refreng"} eller {sov: Vers 1}
+function cpLabel(raw) {
+  if (!raw) return '';
+  const m = raw.match(/label\s*=\s*"([^"]*)"/i) || raw.match(/label\s*=\s*'([^']*)'/i);
+  return (m ? m[1] : raw.replace(/^label\s*=\s*/i, '')).trim();
+}
+
+// Tekst → { meta, items }. Items er blokker (vers/refreng/…), kommentarer og refreng-gjentakelser.
+function parseChordPro(text) {
+  const meta = { title:'', artist:'', subtitle:[], key:'', capo:'', transpose:0, norwegian:false, firstChord:'' };
+  const items = [];
+  let cur = null, explicit = false, lastChorus = null;
+
+  const close = () => {
+    if (cur) {
+      while (cur.lines.length && cur.lines[cur.lines.length - 1] === '') cur.lines.pop();
+      while (cur.lines.length && cur.lines[0] === '') cur.lines.shift();
+      if (cur.lines.length) {
+        items.push(cur);
+        if (cur.kind === 'chorus') lastChorus = cur;
+      }
+    }
+    cur = null; explicit = false;
+  };
+  const open = (kind, label, isExplicit) => {
+    close();
+    cur = { t:'block', kind, label, lines:[] };
+    explicit = isExplicit;
+  };
+
+  const rows = String(text).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').split('\n');
+  for (const raw of rows) {
+    const line = raw.replace(/\s+$/, '');
+    const trimmed = line.trim();
+    if (trimmed.startsWith('#')) continue;   // ChordPro-kommentar (vises ikke)
+
+    const dm = trimmed.match(/^\{\s*([^:}\s]+)\s*(?::\s*|\s+)?(.*?)\s*\}$/);
+    if (dm) {
+      const key = dm[1].toLowerCase();
+      const name = CP_ALIASES[key] || key;
+      const arg = dm[2] || '';
+      switch (name) {
+        case 'title':     meta.title = arg; break;
+        case 'subtitle':  if (arg) meta.subtitle.push(arg); break;
+        case 'artist':    meta.artist = arg; break;
+        case 'composer':  if (arg) meta.subtitle.push('Musikk: ' + arg); break;
+        case 'lyricist':  if (arg) meta.subtitle.push('Tekst: ' + arg); break;
+        case 'key':       meta.key = arg; break;
+        case 'capo':      meta.capo = arg; break;
+        case 'transpose': meta.transpose = parseInt(arg, 10) || 0; break;
+        case 'comment':
+        case 'comment_italic':
+        case 'comment_box': {
+          const style = name === 'comment_italic' ? 'italic' : name === 'comment_box' ? 'box' : 'normal';
+          if (cur && explicit) cur.lines.push({ comment: style, text: arg });
+          else { close(); items.push({ t:'comment', style, text: arg }); }
+          break;
+        }
+        case 'start_of_chorus': open('chorus', cpLabel(arg), true); break;
+        case 'start_of_verse':  open('verse',  cpLabel(arg), true); break;
+        case 'start_of_bridge': open('bridge', cpLabel(arg), true); break;
+        case 'start_of_tab':
+        case 'start_of_grid':   open('tab',    cpLabel(arg), true); break;
+        case 'end_of_chorus':
+        case 'end_of_verse':
+        case 'end_of_bridge':
+        case 'end_of_tab':
+        case 'end_of_grid':     close(); break;
+        case 'chorus':          // gjenta siste refreng
+          if (!(cur && explicit)) { close(); items.push({ t:'recall', label: cpLabel(arg), ref: lastChorus }); }
+          break;
+        default: break;         // ukjente direktiver ignoreres
+      }
+      continue;
+    }
+
+    if (trimmed === '') {
+      if (cur && explicit) cur.lines.push('');
+      else close();           // tom linje avslutter et vers utenfor seksjoner
+      continue;
+    }
+    if (!cur) open('verse', '', false);
+    cur.lines.push(line);
+  }
+  close();
+
+  // Finn akkordene: H i akkordnavn (H, Hm, H7) betyr norsk skrivemåte der B = b-dur, H = h-dur
+  const chords = [];
+  items.forEach(it => {
+    if (it.t !== 'block' || it.kind === 'tab') return;
+    it.lines.forEach(l => {
+      if (typeof l !== 'string') return;
+      for (const m of l.matchAll(/\[([^\]]+)\]/g)) chords.push(m[1]);
+    });
+  });
+  meta.norwegian = chords.some(c => /^H/.test(c)) || /^H/.test(meta.key);
+  meta.firstChord = chords.find(c => /^[A-H]/.test(c)) || '';
+  return { meta, items };
+}
+
+// ── Transponering ──
+const CP_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const CP_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const CP_BASE  = { C:0, D:2, E:4, F:5, G:7, A:9, H:11 };
+const mod12 = n => ((n % 12) + 12) % 12;
+
+function cpRootPc(s, no) {
+  const m = s.match(/^([A-H])([#b]?)$/);
+  if (!m) return null;
+  const L = m[1], acc = m[2];
+  if (L === 'B') return acc === 'b' ? 10 : acc === '#' ? 0 : (no ? 10 : 11);
+  return mod12(CP_BASE[L] + (acc === '#' ? 1 : acc === 'b' ? -1 : 0));
+}
+
+function cpPcName(pc, flats, no) {
+  pc = mod12(pc);
+  if (no) { if (pc === 11) return 'H'; if (pc === 10) return 'B'; }
+  return (flats ? CP_FLAT : CP_SHARP)[pc];
+}
+
+function cpTranspose(chord, n, ctx) {
+  if (!n) return chord;
+  const m = chord.match(/^([A-H][#b]?)(.*)$/);
+  if (!m) return chord;
+  const pc = cpRootPc(m[1], ctx.no);
+  if (pc === null) return chord;
+  const rest = m[2].replace(/\/([A-H][#b]?)$/, (all, b) => {
+    const bp = cpRootPc(b, ctx.no);
+    return bp === null ? all : '/' + cpPcName(bp + n, ctx.flats, ctx.no);
+  });
+  return cpPcName(pc + n, ctx.flats, ctx.no) + rest;
+}
+
+// b-toneart (F, B♭, E♭, A♭, D♭ dur og tilhørende moll) → skriv b-er, ellers kryss
+function cpUseFlats(meta, n) {
+  const src = meta.key || meta.firstChord;
+  const m = src && src.match(/^([A-H][#b]?)(m(?!aj)|min)?/);
+  if (!m) return false;
+  const pc = cpRootPc(m[1], meta.norwegian);
+  if (pc === null) return false;
+  const major = m[2] ? pc + 3 : pc;
+  return [5, 10, 3, 8, 1].includes(mod12(major + n));
+}
+
+// ── Tegning ──
+function cpChordHtml(ch, n, ctx) {
+  if (!ch) return '';
+  if (ch[0] === '*') return `<span class="cp-ann">${escHtml(ch.slice(1))}</span>`;   // [*Tekst] = merknad, ikke akkord
+  return escHtml(cpTranspose(ch.trim(), n, ctx));
+}
+
+// Én tekstlinje med [akkorder] → akkorder over ordene.
+// Hvert ord (med akkorder midt i ordet) er en udelelig gruppe, slik at linjer brytes mellom ord.
+function cpRenderLine(line, n, ctx) {
+  const parts = [];
+  const re = /\[([^\]]*)\]/g;
+  let idx = 0, pending = '', m;
+  while ((m = re.exec(line)) !== null) {
+    const text = line.slice(idx, m.index);
+    if (text !== '' || pending !== '') parts.push({ chord: pending, text });
+    pending = m[1];
+    idx = m.index + m[0].length;
+  }
+  const rest = line.slice(idx);
+  if (rest !== '' || pending !== '') parts.push({ chord: pending, text: rest });
+
+  if (!parts.some(p => p.chord)) return `<div class="cp-plain">${escHtml(line)}</div>`;
+
+  const atoms = [];
+  parts.forEach(p => {
+    const pieces = p.text.match(/\S+\s*|\s+/g) || [''];
+    pieces.forEach((t, i) => atoms.push({ chord: i === 0 ? p.chord : '', text: t }));
+  });
+
+  const groups = [];
+  let g = [];
+  atoms.forEach(a => {
+    g.push(a);
+    if (/\s$/.test(a.text)) { groups.push(g); g = []; }
+  });
+  if (g.length) groups.push(g);
+
+  const html = groups.map(grp =>
+    '<span class="cp-w">' + grp.map(a =>
+      `<span class="cp-seg"><span class="cp-chord">${cpChordHtml(a.chord, n, ctx)}</span><span class="cp-lyr">${escHtml(a.text)}</span></span>`
+    ).join('') + '</span>'
+  ).join('');
+  return `<div class="cp-line">${html}</div>`;
+}
+
+function cpCommentHtml(style, text) {
+  const cls = style === 'italic' ? ' italic' : style === 'box' ? ' box' : '';
+  return `<div class="cp-comment${cls}">${escHtml(text)}</div>`;
+}
+
+function cpRenderBlock(b, n, ctx) {
+  const label = b.label || ({ chorus:'Refreng', bridge:'Bridge' }[b.kind] || '');
+  let body;
+  if (b.kind === 'tab') {
+    body = `<pre class="cp-tab">${escHtml(b.lines.filter(l => typeof l === 'string').join('\n'))}</pre>`;
+  } else {
+    body = b.lines.map(l =>
+      typeof l !== 'string' ? cpCommentHtml(l.comment, l.text)
+      : l.trim() === ''     ? '<div class="cp-gap"></div>'
+      : cpRenderLine(l, n, ctx)
+    ).join('');
+  }
+  return `<section class="cp-block cp-${b.kind}">${label ? `<div class="cp-label">${escHtml(label)}</div>` : ''}${body}</section>`;
+}
+
+function cpRenderBody(parsed, n) {
+  const ctx = { no: parsed.meta.norwegian, flats: cpUseFlats(parsed.meta, n) };
+  return parsed.items.map(it => {
+    if (it.t === 'comment') return cpCommentHtml(it.style, it.text);
+    if (it.t === 'recall')  return it.ref ? cpRenderBlock(it.ref, n, ctx)
+                                          : `<div class="cp-label">${escHtml(it.label || 'Refreng')}</div>`;
+    return cpRenderBlock(it, n, ctx);
+  }).join('');
+}
+
+// ── Leseren ──
+let reader = null;        // { song, parsed, semis }
+let readerToken = 0;      // hindrer at en treg fil overskriver en nyere
+let readerFs = 1.05;      // rem
+try {
+  const v = parseFloat(localStorage.getItem(CP_FS_KEY));
+  if (v >= 0.8 && v <= 2) readerFs = v;
+} catch {}
+
+function cpFetchUrl(path) { return path.split('/').map(encodeURIComponent).join('/'); }
+
+async function openReader(songId) {
+  loadData();
+  const song = getSong(songId);
+  if (!song || !song.file) return;
+  const token = ++readerToken;
+  reader = null;
+
+  document.getElementById('readerBarTitle').textContent = song.title;
+  document.getElementById('readerPage').innerHTML = `<div class="empty"><p>Laster «${escHtml(song.file)}»…</p></div>`;
+  document.getElementById('readerBg').classList.add('open');
+  document.getElementById('readerScroll').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  applyReaderFont();
+
+  let text = null, fromCache = false;
+  try {
+    const res = await fetch(cpFetchUrl(song.file), { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    text = await res.text();
+    try { localStorage.setItem(CP_CACHE + song.file, text); } catch {}
+  } catch (e) {
+    try { text = localStorage.getItem(CP_CACHE + song.file); } catch { text = null; }
+    fromCache = text !== null;
+  }
+  if (token !== readerToken) return;
+
+  if (text === null) {
+    document.getElementById('readerPage').innerHTML =
+      `<div class="empty"><div class="big">📄</div><p>Fant ikke <code>${escHtml(song.file)}</code>.<br>` +
+      `Sjekk at filen ligger i repoet, at stien er skrevet riktig (store og små bokstaver teller), og at du er på nett.</p></div>`;
+    return;
+  }
+
+  const parsed = parseChordPro(text);
+  reader = { song, parsed, semis: parsed.meta.transpose || 0 };
+  renderReader();
+  if (fromCache) showToast('Ingen forbindelse – viser lagret kopi');
+}
+
+function renderReader() {
+  if (!reader) return;
+  const { song, parsed, semis } = reader;
+  const meta = parsed.meta;
+  const ctx = { no: meta.norwegian, flats: cpUseFlats(meta, semis) };
+
+  const subs = [song.artist || meta.artist, ...meta.subtitle].filter(Boolean);
+  const chips = [];
+  if (meta.key) {
+    const k = cpTranspose(meta.key, semis, ctx);
+    chips.push(`Toneart <b>${escHtml(k)}</b>` + (semis ? ` (originalt ${escHtml(meta.key)})` : ''));
+  }
+  if (semis) chips.push(`Transponert <b>${semis > 0 ? '+' : ''}${semis}</b>`);
+  if (meta.capo) chips.push(`Capo <b>${escHtml(meta.capo)}</b>`);
+  if (song.comment) chips.push(escHtml(song.comment));
+
+  document.getElementById('readerSemis').textContent = semis > 0 ? '+' + semis : String(semis);
+  document.getElementById('readerPage').innerHTML =
+    `<h2 class="cp-title">${escHtml(meta.title || song.title)}</h2>` +
+    subs.map(s => `<div class="cp-sub">${escHtml(s)}</div>`).join('') +
+    (chips.length ? `<div class="cp-meta">${chips.map(c => `<span class="cp-chip">${c}</span>`).join('')}</div>` : '') +
+    `<div class="cp-body">${cpRenderBody(parsed, semis)}</div>` +
+    (song.url ? `<div class="cp-foot"><a href="${escHtml(song.url)}" target="_blank" rel="noopener">Åpne original ↗</a></div>` : '');
+}
+
+function readerTranspose(d) {
+  if (!reader) return;
+  reader.semis = Math.max(-11, Math.min(11, reader.semis + d));
+  renderReader();
+}
+function readerResetTranspose() {
+  if (!reader) return;
+  reader.semis = reader.parsed.meta.transpose || 0;
+  renderReader();
+}
+
+function applyReaderFont() {
+  document.getElementById('readerPage').style.setProperty('--cp-fs', readerFs + 'rem');
+}
+function readerFont(d) {
+  readerFs = Math.max(0.8, Math.min(2, Math.round((readerFs + d * 0.1) * 100) / 100));
+  applyReaderFont();
+  try { localStorage.setItem(CP_FS_KEY, String(readerFs)); } catch {}
+}
+
+function closeReader() {
+  readerToken++;
+  reader = null;
+  document.getElementById('readerBg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ══════════════════════════════════════════════════════════
 //  EXPORT / IMPORT
 // ══════════════════════════════════════════════════════════
 function exportArchive() {
@@ -1392,6 +1919,7 @@ function mergeIncomingData(data, opts = {}) {
 
   const toAdd = [];
   const conflicts = [];
+  const fileAdopt = [];   // lokale sanger uten ChordPro-fil som får filen fra data.json
   const idRemap = {}; // old imported id -> local id (for sets)
 
   for (const imp of importedSongs) {
@@ -1405,7 +1933,11 @@ function mergeIncomingData(data, opts = {}) {
       idRemap[imp.id] = local.id;
       const localUrl = (local.url||'').trim();
       const impUrl   = (imp.url  ||'').trim();
-      if (localUrl !== impUrl) conflicts.push({ local, imported: imp, chosen: 'local' });
+      const localFile = (local.file||'').trim();
+      const impFile   = (imp.file  ||'').trim();
+      if (impFile && !localFile) fileAdopt.push({ id: local.id, file: impFile });
+      const fileConflict = impFile && localFile && impFile !== localFile;
+      if (localUrl !== impUrl || fileConflict) conflicts.push({ local, imported: imp, chosen: 'local' });
     }
   }
 
@@ -1430,14 +1962,14 @@ function mergeIncomingData(data, opts = {}) {
     }
   }
 
-  if (toAdd.length === 0 && conflicts.length === 0 && setsToAdd.length === 0 && setsToMerge.length === 0) {
+  if (toAdd.length === 0 && conflicts.length === 0 && setsToAdd.length === 0 && setsToMerge.length === 0 && fileAdopt.length === 0) {
     if (!silentIfEmpty) showToast('Ingen nye data å importere.');
     return;
   }
 
-  pendingMerge = { toAdd, conflicts, setsToAdd, setsToMerge };
+  pendingMerge = { toAdd, conflicts, setsToAdd, setsToMerge, fileAdopt };
 
-  if (conflicts.length === 0) finalizeMerge(toAdd, [], setsToAdd, setsToMerge);
+  if (conflicts.length === 0) finalizeMerge(toAdd, [], setsToAdd, setsToMerge, fileAdopt);
   else openConflictModal();
 }
 
@@ -1456,13 +1988,20 @@ async function syncFromGithub(manual) {
   }
 }
 
-function finalizeMerge(toAdd, resolvedConflicts, setsToAdd, setsToMerge) {
+function finalizeMerge(toAdd, resolvedConflicts, setsToAdd, setsToMerge, fileAdopt) {
   loadData();
   toAdd.forEach(s => songs.push(s));
+  (fileAdopt||[]).forEach(u => {
+    const s = songs.find(x => x.id === u.id);
+    if (s && !(s.file||'').trim()) s.file = u.file;
+  });
   resolvedConflicts.forEach(c => {
     if (c.chosen === 'import') {
       const idx = songs.findIndex(s => s.id === c.local.id);
-      if (idx >= 0) songs[idx].url = (c.imported.url||'').trim();
+      if (idx >= 0) {
+        songs[idx].url = (c.imported.url||'').trim();
+        if ((c.imported.file||'').trim()) songs[idx].file = c.imported.file.trim();
+      }
     }
   });
   // add brand-new sets
@@ -1478,9 +2017,11 @@ function finalizeMerge(toAdd, resolvedConflicts, setsToAdd, setsToMerge) {
 
   const a = toAdd.length, r = resolvedConflicts.length;
   const st = (setsToAdd||[]).length, sm = (setsToMerge||[]).length;
+  const fa = (fileAdopt||[]).length;
   const parts = [];
   if (a > 0)               parts.push(`${a} nye sanger`);
   if (r > 0)               parts.push(`${r} konflikter løst`);
+  if (fa > 0)              parts.push(`${fa} sanger fikk ChordPro-fil`);
   if (st > 0)              parts.push(`${st} nye sett`);
   if (mergedSongsTotal > 0) parts.push(`${mergedSongsTotal} sanger lagt til i ${sm} sett`);
   showToast(parts.length ? parts.join(', ') + ' ✓' : 'Ingen nye data å importere.');
@@ -1490,17 +2031,23 @@ function finalizeMerge(toAdd, resolvedConflicts, setsToAdd, setsToMerge) {
 function openConflictModal() {
   const list = document.getElementById('conflictList');
   list.innerHTML = pendingMerge.conflicts.map((c,i) => {
-    const lu = c.local.url||'', iu = c.imported.url||'';
+    const sideHtml = s => {
+      const u = (s.url||'').trim(), f = (s.file||'').trim();
+      const out = [];
+      if (u) out.push(`<a href="${escHtml(u)}" target="_blank" rel="noopener">${escHtml(u)}</a>`);
+      if (f) out.push(`♫ ${escHtml(f)}`);
+      return out.length ? out.join('<br>') : '<em>ingen lenke</em>';
+    };
     return `<div class="conflict-item">
       <div class="song-name">${escHtml(c.local.title)} <span>— ${escHtml(c.local.artist)}</span></div>
       <div class="conflict-urls">
         <div class="conflict-url-box chosen" id="box_local_${i}">
           <div class="clabel">Lokal lenke</div>
-          <div class="curl">${lu?`<a href="${escHtml(lu)}" target="_blank" rel="noopener">${escHtml(lu)}</a>`:'<em>ingen lenke</em>'}</div>
+          <div class="curl">${sideHtml(c.local)}</div>
         </div>
         <div class="conflict-url-box" id="box_import_${i}">
           <div class="clabel">Importert lenke</div>
-          <div class="curl">${iu?`<a href="${escHtml(iu)}" target="_blank" rel="noopener">${escHtml(iu)}</a>`:'<em>ingen lenke</em>'}</div>
+          <div class="curl">${sideHtml(c.imported)}</div>
         </div>
       </div>
       <div class="conflict-choose">
@@ -1522,7 +2069,7 @@ function pickConflict(i, choice) {
 function resolveConflicts(choice) { pendingMerge.conflicts.forEach((_,i) => pickConflict(i,choice)); }
 function applyResolutions() {
   document.getElementById('conflictBg').classList.remove('open');
-  finalizeMerge(pendingMerge.toAdd, pendingMerge.conflicts, pendingMerge.setsToAdd, pendingMerge.setsToMerge);
+  finalizeMerge(pendingMerge.toAdd, pendingMerge.conflicts, pendingMerge.setsToAdd, pendingMerge.setsToMerge, pendingMerge.fileAdopt);
   pendingMerge = null;
 }
 
@@ -1543,7 +2090,7 @@ function showToast(msg) {
 // ══════════════════════════════════════════════════════════
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    closeSongModal(); closeSetModal(); closeAddToSetModal();
+    closeSongModal(); closeSetModal(); closeAddToSetModal(); closeReader();
     document.getElementById('conflictBg').classList.remove('open');
   }
   if (e.key === 'Enter') {
