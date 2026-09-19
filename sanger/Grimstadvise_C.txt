@@ -1,0 +1,37 @@
+{title: Grimstadvise}
+{subtitle: Tekst og melodi: John Berg}
+{key: C}
+
+[C]Mi kan'kje kalle Grimstad storby
+sånn som de i [F]Oslo og i Arendal [C]kan
+[G]Nei, husene er heller [G7]små, og [C]gatene er likeså.
+Men [C]vi har brygga full av båter,
+vi har skjærgård, [F]sol og vi har himmel [C]blå.
+Der [D]ute tror jeg du vil føle som [G7]så:
+
+{start_of_chorus}
+Du kan se [C]solskinnet [F]flomme over [C]Rom og Paris,
+det er som [Dm]må[G]ne imot i [C]Grim[G7]stad.
+Når solen [C]kaster sin [F]glans mellom [C]holmer og skjær
+da får du [Dm]føle hva [G7]solskinn [C]er.
+{end_of_chorus}
+
+{comment: Vers 2 og 3 er ikke besifret i originalen — antakelig samme akkordmønster som vers 1}
+På Binabben en stille sommerdag
+når byen ligger der i solskinnsvær,
+hvert hus, hver gate og hver hei
+du ser, er kjent og kjært for deg.
+Og ytterst ute kan du se det lyst hvitt
+fra bølger som blir knust mot skjær.
+Der kan du se hvor deilig byen din er.
+
+{chorus}
+
+Til havet har bestandig byen vår vært knyttet,
+skipsfart har gjort byen kjent,
+ja, båter kommer, båter går som de har gjort i alle år.
+Når Grimstad-skuter vendte hjem fra langfart,
+ankret opp på fjorden, kanskje da
+de sto ved rekka, så mot byen og sa:
+
+{chorus}
