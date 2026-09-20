@@ -68,8 +68,9 @@
       "title": "Sommersang til Homborsund",
       "artist": "Kåre Siem",
       "url": "https://nortabs.net/tab/6807/",
-      "comment": "",
-      "added": 1781211615977
+      "comment": "Sørlandsvise",
+      "added": 1781211615977,
+      "file": ""
     },
     {
       "id": "mtylw0coc38ou",
@@ -399,6 +400,24 @@
       "comment": "",
       "file": "sanger/Grimstadvise_C.txt",
       "added": 1789801763295
+    },
+    {
+      "id": "mu9xqysay7git",
+      "title": "Tore Tang",
+      "artist": "",
+      "url": "",
+      "comment": "",
+      "file": "sanger/Tore Tang.txt",
+      "added": 1789915961242
+    },
+    {
+      "id": "mua95tbtpm07x",
+      "title": "That's what friends are for",
+      "artist": "Dianne Warwick",
+      "url": "",
+      "comment": "",
+      "file": "sanger/That's_what_friends_are_for_D.txt",
+      "added": 1789935129785
     }
   ],
   "sets": []
