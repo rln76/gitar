@@ -617,6 +617,12 @@
   .song-card.compact .song-comment {
     display: none;
   }
+  .song-card.compact .song-comment.match {
+    display: block;
+    margin-top: 0;
+    min-width: 0;
+    flex: 0 1 auto;
+  }
   .song-card.compact .song-actions {
     display: none;
   }
@@ -832,7 +838,7 @@
     <div class="search-area">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Søk etter sang eller artist…" autocomplete="off" spellcheck="false">
+        <input type="text" id="searchInput" placeholder="Søk etter sang, artist eller kommentar…" autocomplete="off" spellcheck="false">
       </div>
       <button class="btn" onclick="openSongModal()">+ Legg til</button>
     </div>
@@ -1061,9 +1067,12 @@ function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function escRe(s)   { return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 function isValidUrl(s) { try { return ['http:','https:'].includes(new URL(s).protocol); } catch { return false; } }
 
+// Utheving av alle søkeord (deler først opp den rå teksten, slik at HTML-tegn aldri ødelegges)
 function highlight(text, q) {
-  if (!q) return escHtml(text);
-  return escHtml(text).replace(new RegExp(`(${escRe(q)})`,'gi'),'<mark>$1</mark>');
+  const terms = (q || '').split(/\s+/).filter(Boolean).map(escRe);
+  if (!terms.length) return escHtml(text);
+  const re = new RegExp(`(${terms.join('|')})`, 'gi');
+  return String(text).split(re).map((part, i) => i % 2 ? `<mark>${escHtml(part)}</mark>` : escHtml(part)).join('');
 }
 
 function getSong(id) { return songs.find(s => s.id === id); }
@@ -1090,9 +1099,12 @@ function renderArchive() {
   const songInSets = {};
   sets.forEach(set => set.songIds.forEach(id => { songInSets[id] = true; }));
 
-  let filtered = songs.filter(s =>
-    s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
-  );
+  // Søker i tittel, artist og kommentar. Flere ord: alle må treffe (i hvilket som helst av feltene).
+  const terms = q.split(/\s+/).filter(Boolean);
+  let filtered = songs.filter(s => {
+    const hay = `${s.title || ''} ${s.artist || ''} ${s.comment || ''}`.toLowerCase();
+    return terms.every(t => hay.includes(t));
+  });
   filtered.sort((a,b) => {
     if (sort==='title')  return a.title.localeCompare(b.title,'no');
     if (sort==='artist') return a.artist.localeCompare(b.artist,'no');
@@ -1115,6 +1127,9 @@ function renderArchive() {
     return;
   }
 
+  // I kompaktvisning vises kommentaren bare når søket treffer den (så man ser hvorfor sangen kom opp)
+  const commentHit = s => terms.length > 0 && terms.some(t => (s.comment || '').toLowerCase().includes(t));
+
   list.innerHTML = filtered.map(s => {
     const hasSet = songInSets[s.id];
 
@@ -1130,6 +1145,7 @@ function renderArchive() {
           <div class="song-title">${highlight(s.title,q)}</div>
           <span class="compact-sep">–</span>
           <div class="song-artist">${highlight(s.artist,q)}</div>
+          ${commentHit(s) ? `<span class="compact-sep">·</span><div class="song-comment match">${highlight(s.comment,q)}</div>` : ''}
         </div>
       </div>`;
     }
