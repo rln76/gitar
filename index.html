@@ -176,7 +176,28 @@
     color: var(--text-dim);
     pointer-events: none;
   }
-  #searchInput { padding-left: 2.4rem; }
+  #searchInput { padding-left: 2.4rem; padding-right: 2.6rem; }
+  .search-clear {
+    position: absolute;
+    right: 0.3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2rem;
+    height: 2rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+  .search-clear.show { display: flex; }
+  .search-clear:hover { color: var(--text); background: var(--surface2); }
 
   /* ── TOOLBAR ── */
   .toolbar {
@@ -839,6 +860,7 @@
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" placeholder="Søk etter sang, artist eller kommentar…" autocomplete="off" spellcheck="false">
+        <button type="button" class="search-clear" id="searchClear" aria-label="Tøm søket" title="Tøm søket (Esc)">✕</button>
       </div>
       <button class="btn" onclick="openSongModal()">+ Legg til</button>
     </div>
@@ -2321,7 +2343,19 @@ document.addEventListener('keydown', e => {
   }
 });
 
-document.getElementById('searchInput').addEventListener('input', renderArchive);
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+function updateSearchClear() { searchClear.classList.toggle('show', searchInput.value !== ''); }
+function clearSearch() {
+  searchInput.value = '';
+  updateSearchClear();
+  renderArchive();
+  searchInput.focus();
+}
+searchInput.addEventListener('input', () => { updateSearchClear(); renderArchive(); });
+searchInput.addEventListener('keydown', e => { if (e.key === 'Escape' && searchInput.value) clearSearch(); });
+searchClear.addEventListener('click', clearSearch);
+updateSearchClear();
 
 // ══════════════════════════════════════════════════════════
 //  INIT
