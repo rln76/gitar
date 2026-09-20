@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChordPro-konverterer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f0e0c'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23c8a96e'%3E%E2%99%AA%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1916;
+    --surface2: #242220;
+    --border: #2e2c28;
+    --accent: #c8a96e;
+    --accent2: #8fbe8f;
+    --accent3: #7ab3d4;
+    --text: #e8e4dc;
+    --text-muted: #7a7670;
+    --text-dim: #4a4844;
+    --danger: #c06060;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+  }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  /* ── Topp ── */
+  .top {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem 1rem;
+    padding: 0.7rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .top h1 {
+    font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700;
+    color: var(--accent); white-space: nowrap;
+  }
+  .top .back { font-size: 0.82rem; color: var(--text-muted); text-decoration: none; margin-right: auto; }
+  .top .back:hover { color: var(--accent); }
+  .seg {
+    display: flex; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .seg button {
+    background: none; border: 0; border-right: 1px solid var(--border);
+    color: var(--text-muted); font: 400 0.82rem 'DM Sans', sans-serif;
+    padding: 0.42rem 0.95rem; cursor: pointer;
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button:hover { color: var(--text); }
+  .seg button[aria-pressed="true"] { color: var(--accent); background: var(--surface); }
+
+  /* ── Paneler ── */
+  main {
+    flex: 1; min-height: 0; display: grid; gap: 0.75rem; padding: 0.75rem;
+    grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+  }
+  .pane {
+    display: none; flex-direction: column; min-height: 0; min-width: 0;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .pane.on { display: flex; }
+  .ph {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem;
+    padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border);
+  }
+  .ph h2 {
+    font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700;
+    color: var(--text); margin-right: auto;
+  }
+  .tools {
+    display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.5rem 0.75rem 0;
+  }
+
+  .b {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    border-radius: var(--radius); padding: 0.32rem 0.7rem;
+    font: 400 0.8rem 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .b:hover { border-color: var(--accent); color: var(--accent); }
+  .b.primary { background: var(--accent); color: #17150f; border-color: var(--accent); font-weight: 500; }
+  .b.primary:hover { background: #d6b97e; color: #17150f; }
+  .b.mono { font-family: 'DM Mono', monospace; }
+  .b:disabled { opacity: 0.45; cursor: default; }
+
+  /* ── Redigeringsfelt med fargelegging ── */
+  .ed {
+    position: relative; flex: 1; min-height: 8rem;
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    margin: 0.6rem 0.75rem;
+  }
+  .ed:focus-within { border-color: var(--accent); }
+  .ed pre, .ed textarea {
+    position: absolute; inset: 0; margin: 0; padding: 0.7rem 0.85rem; border: 0;
+    font: 400 13.5px/1.6 'DM Mono', ui-monospace, monospace;
+    letter-spacing: 0; white-space: pre; tab-size: 8; overflow: auto;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+  .ed pre { overflow: hidden; color: var(--text); pointer-events: none; }
+  .ed textarea {
+    background: transparent; color: transparent; -webkit-text-fill-color: transparent;
+    caret-color: var(--accent); resize: none; outline: none; -webkit-appearance: none;
+  }
+  .ed textarea::placeholder { color: var(--text-muted); -webkit-text-fill-color: var(--text-muted); }
+  .ed textarea::selection { background: rgba(200, 169, 110, 0.32); -webkit-text-fill-color: transparent; }
+  .ed.drop { border-color: var(--accent2); }
+
+  /* fargene i «Original» viser hvordan hver linje ble lest */
+  .k-chords { color: var(--accent); }
+  .k-loose  { color: var(--accent); text-decoration: underline dotted; text-underline-offset: 3px; }
+  .k-label  { color: var(--accent3); }
+  .k-header { color: var(--text-muted); font-style: italic; }
+  .k-skip   { color: var(--text-muted); text-decoration: line-through; }
+  .k-note   { color: var(--text-muted); font-style: italic; }
+  .k-tab    { color: var(--accent2); }
+  /* fargene i ChordPro */
+  .h-ch  { color: var(--accent); }
+  .h-ann { color: var(--text-muted); font-style: italic; }
+  .h-d   { color: var(--accent3); }
+  .h-c   { color: var(--text-muted); font-style: italic; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; padding: 0 0.75rem;
+    font: 400 0.72rem 'DM Mono', monospace;
+  }
+  .stats { padding: 0.45rem 0.75rem 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; }
+  .stats p { margin-top: 0.3rem; color: var(--text); }
+  .stats p.warn { color: var(--accent); }
+
+  /* ── Innstillinger ── */
+  .opts { margin: 0.55rem 0.75rem 0.75rem; border-top: 1px solid var(--border); padding-top: 0.5rem; max-height: 42%; overflow: auto; }
+  .opts summary { cursor: pointer; font-size: 0.85rem; color: var(--text); padding: 0.15rem 0; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.6rem 0; }
+  .fields label, .sel label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.75rem; color: var(--text-muted); }
+  .fields .wide { grid-column: 1 / -1; }
+  .opts input[type=text], .opts select, .foot input[type=text] {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 0.38rem 0.55rem; font: 400 0.85rem 'DM Sans', sans-serif; width: 100%;
+  }
+  .opts input::placeholder, .foot input::placeholder { color: var(--text-muted); }
+  .opts input:focus, .opts select:focus, .foot input:focus { border-color: var(--accent); outline: none; }
+  .checks { display: grid; gap: 0.4rem; margin-bottom: 0.7rem; }
+  .checks label { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.82rem; color: var(--text); cursor: pointer; line-height: 1.35; }
+  .checks input { accent-color: var(--accent); margin-top: 0.15rem; }
+  .sel { display: grid; gap: 0.5rem; }
+
+  /* ── ChordPro-panel ── */
+  .banner {
+    margin: 0.6rem 0.75rem 0; padding: 0.55rem 0.7rem; font-size: 0.8rem; line-height: 1.4;
+    background: rgba(200, 169, 110, 0.1); border: 1px solid var(--accent); border-radius: var(--radius);
+    display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;
+  }
+  .banner span { flex: 1; min-width: 12rem; }
+  .foot { padding: 0 0.75rem 0.75rem; display: grid; gap: 0.5rem; }
+  .foot .row { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: end; }
+  .foot label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.75rem; color: var(--text-muted); flex: 1; min-width: 9rem; }
+  .foot .hint { font-size: 0.75rem; color: var(--text-muted); line-height: 1.45; }
+  .foot code { font-family: 'DM Mono', monospace; color: var(--text); font-size: 0.72rem; }
+
+  /* ── Visning (samme utseende som i Sangarkivet) ── */
+  .ctl-group {
+    display: flex; align-items: center; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; flex-shrink: 0;
+  }
+  .ctl-group button {
+    background: none; border: none; color: var(--text-muted); font: 400 0.85rem 'DM Mono', monospace;
+    padding: 0.32rem 0.65rem; cursor: pointer;
+  }
+  .ctl-group button:hover { color: var(--accent); background: var(--surface); }
+  .ctl-group button.ctl-toggle { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; }
+  .ctl-group button.ctl-toggle.on  { color: var(--accent); }
+  .ctl-group button.ctl-toggle.off { color: var(--text-muted); text-decoration: line-through; }
+  .ctl-val {
+    font: 400 0.78rem 'DM Mono', monospace; color: var(--text);
+    min-width: 2.3rem; text-align: center; cursor: pointer; user-select: none;
+  }
+  .reader-scroll { flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
+  .reader-page { max-width: 820px; margin: 0 auto; padding: 1.4rem 1.2rem 4rem; font-size: var(--cp-fs, 1.05rem); }
+  .cp-untitled { color: var(--text-muted); font-style: italic; font-weight: 400; }
+  .empty { color: var(--text-muted); font-size: 0.9rem; line-height: 1.55; max-width: 26rem; }
+  .cp-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--accent);
+  }
+  .cp-sub { font-size: 0.9rem; color: var(--text-muted); font-style: italic; margin-top: 0.3rem; }
+  .cp-meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
+  .cp-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.2rem 0.7rem;
+  }
+  .cp-chip b { color: var(--accent); font-weight: 500; }
+  .cp-foot { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.82rem; }
+  .cp-foot a { color: var(--accent2); text-decoration: none; }
+
+  .cp-body { margin-top: 1.6rem; }
+  .cp-block { margin-bottom: 1.5rem; }
+  .cp-k-chorus { border-left: 3px solid var(--accent3); padding-left: 1rem; }
+  .cp-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+
+  .cp-line { margin: 0.1rem 0; }
+  .cp-w { display: inline-block; white-space: nowrap; vertical-align: top; }
+  .cp-seg { display: inline-flex; flex-direction: column; vertical-align: top; }
+  .cp-chord {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 0.82em;
+    color: var(--accent);
+    min-height: 1.45em;
+    line-height: 1.45em;
+    padding-right: 0.35em;
+    white-space: pre;
+  }
+  .cp-ann { font-family: 'DM Sans', sans-serif; font-weight: 300; font-style: italic; color: var(--text-muted); }
+  .cp-lyr { white-space: pre; color: var(--text); font-weight: 400; line-height: 1.35; }
+  .cp-plain { white-space: pre-wrap; color: var(--text); font-weight: 400; line-height: 1.4; margin: 0.1rem 0; }
+  .cp-gap { height: 0.8rem; }
+  .cp-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8em;
+    line-height: 1.3;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+    overflow-x: auto;
+  }
+  .cp-comment {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border-left: 2px solid var(--border);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.4rem 0.8rem;
+    margin: 0 0 1.2rem;
+    line-height: 1.45;
+  }
+  .cp-comment.italic { font-style: italic; background: none; border-left: none; padding: 0.1rem 0; }
+  .cp-comment.box { border: 1px solid var(--border); border-radius: var(--radius); }
+  .cp-block .cp-comment { margin: 0.3rem 0; }
+
+  /* Uten besifring: bare tekst */
+  .hide-chords .cp-chord,
+  .hide-chords .cp-chordonly,
+  .hide-chords .cp-k-tab,
+  .hide-chords .cp-k-instr { display: none; }
+
+
+
+  .toast {
+    position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%);
+    background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 0.55rem 1rem; font-size: 0.85rem; max-width: 90vw;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 899px) {
+    main { grid-template-columns: minmax(0, 1fr); padding: 0.5rem; }
+    .top { padding: 0.6rem 0.75rem; }
+    .top .back { margin-right: 0; }
+    .seg { width: 100%; }
+    .seg button { flex: 1; }
+    .reader-page { padding: 1.1rem 0.9rem 4rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>♪ ChordPro-konverterer</h1>
+  <a class="back" href="./">Til Sangarkivet</a>
+  <div class="seg" role="group" aria-label="Vis paneler">
+    <button type="button" data-pane="orig" aria-pressed="true">Original</button>
+    <button type="button" data-pane="cp" aria-pressed="true">ChordPro</button>
+    <button type="button" data-pane="view" aria-pressed="true">Visning</button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ORIGINAL -->
+  <section class="pane" id="pane-orig" aria-label="Original">
+    <div class="ph">
+      <h2>Original</h2>
+      <button type="button" class="b" id="btnPaste" title="Lim inn fra utklippstavlen">Lim inn</button>
+      <button type="button" class="b" id="btnOpen" title="Åpne .txt- eller .docx-fil">Åpne fil</button>
+      <button type="button" class="b" id="btnSample">Eksempel</button>
+      <button type="button" class="b" id="btnClear">Tøm</button>
+    </div>
+    <div class="ed" id="edSrc"></div>
+    <div class="legend" aria-label="Slik er linjene lest">
+      <span class="k-chords">akkordlinje</span>
+      <span class="k-loose">akkorder uten plassering</span>
+      <span class="k-label">del</span>
+      <span class="k-header">tittel og info</span>
+      <span class="k-skip">hoppet over</span>
+    </div>
+    <div class="stats" id="stats"></div>
+    <details class="opts" id="opts" open>
+      <summary>Tittel og innstillinger</summary>
+      <div class="fields">
+        <label>Tittel<input type="text" id="fTitle" autocomplete="off"></label>
+        <label>Artist<input type="text" id="fArtist" autocomplete="off"></label>
+        <label>Toneart<input type="text" id="fKey" autocomplete="off"></label>
+        <label>Capo<input type="text" id="fCapo" inputmode="numeric" autocomplete="off"></label>
+        <label class="wide">Undertittel<input type="text" id="fSub" autocomplete="off" placeholder="f.eks. Tekst og melodi: Navn Navnesen"></label>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" id="oHeader"> Les tittel og info øverst i teksten</label>
+        <label><input type="checkbox" id="oStrip"> Fjern rester fra nettsider og bokser (fullskjerm, vis grep, stjerneramme …)</label>
+        <label><input type="checkbox" id="oCollapse"> Fjern blank linje mellom hver linje (Word-dokumenter)</label>
+        <label><input type="checkbox" id="oRecall"> Skriv {chorus} når refrenget gjentas uendret</label>
+        <label><input type="checkbox" id="oAuto"> Finn refreng selv: avsnitt som gjentas ordrett</label>
+        <label><input type="checkbox" id="oVerse"> Vis versnummer som overskrift</label>
+      </div>
+      <div class="sel">
+        <label>Akkorder som står litt ved siden av et ord
+          <select id="oSnap">
+            <option value="0">Behold nøyaktig som i originalen</option>
+            <option value="1">Flytt til ordstart ved 1 tegn avvik</option>
+            <option value="2">Flytt til ordstart ved opptil 2 tegn avvik</option>
+            <option value="3">Flytt til ordstart ved opptil 3 tegn avvik</option>
+          </select>
+        </label>
+        <label>Akkorder som ikke står over bestemte ord («G Am D G»)
+          <select id="oLoose">
+            <option value="spread">Fordel jevnt utover linjen</option>
+            <option value="start">Sett først på linjen</option>
+          </select>
+        </label>
+      </div>
+    </details>
+  </section>
+
+  <!-- CHORDPRO -->
+  <section class="pane" id="pane-cp" aria-label="ChordPro">
+    <div class="ph">
+      <h2>ChordPro</h2>
+      <button type="button" class="b" id="btnReconvert" title="Lag ChordPro på nytt fra originalen">Konverter på nytt</button>
+    </div>
+    <div class="tools" role="toolbar" aria-label="Sett inn">
+      <button type="button" class="b" data-ins="chorus" title="Merk linjene og trykk for å gjøre dem til refreng">Refreng</button>
+      <button type="button" class="b" data-ins="verse" title="Merk linjene og trykk for å gjøre dem til et vers med overskrift">Vers</button>
+      <button type="button" class="b" data-ins="bridge" title="Merk linjene og trykk for å gjøre dem til bridge">Bridge</button>
+      <button type="button" class="b" data-ins="recall" title="Gjenta refrenget uten å skrive det på nytt">{chorus}</button>
+      <button type="button" class="b" data-ins="comment" title="Ny merknad på linjen over markøren">Merknad</button>
+      <button type="button" class="b mono" data-ins="chord" title="Sett [ ] rundt det du har markert, eller ny akkord ved markøren (Ctrl+K)">[ ]</button>
+    </div>
+    <div class="banner" id="banner" hidden>
+      <span>Du har redigert ChordPro-teksten, så den følger ikke lenger med når du endrer originalen eller innstillingene.</span>
+      <button type="button" class="b" id="btnBannerConvert">Konverter på nytt og overskriv</button>
+    </div>
+    <div class="ed" id="edCp"></div>
+    <div class="foot">
+      <div class="row">
+        <label>Filnavn<input type="text" id="fn" autocomplete="off" spellcheck="false"></label>
+        <button type="button" class="b" id="btnCopy">Kopier</button>
+        <button type="button" class="b" id="btnDl">Last ned</button>
+        <button type="button" class="b primary" id="btnGh" title="Åpner GitHub med filen ferdig utfylt">Opprett på GitHub</button>
+      </div>
+      <div class="row">
+        <label>GitHub-repo<input type="text" id="ghRepo" autocomplete="off" spellcheck="false" placeholder="bruker/repo"></label>
+      </div>
+      <p class="hint">Filen legges i mappen <code>sanger/</code> i repoet. Trykk ⟳ i Sangarkivet, så dukker den opp som en ny sang.</p>
+    </div>
+  </section>
+
+  <!-- VISNING -->
+  <section class="pane" id="pane-view" aria-label="Visning">
+    <div class="ph">
+      <h2>Visning</h2>
+      <button type="button" class="b" id="btnSaveTr" hidden title="Sangen åpnes med denne transponeringen i arkivet">Lagre transponering</button>
+      <div class="ctl-group">
+        <button type="button" id="chordsBtn" class="ctl-toggle on" aria-pressed="true" title="Skjul akkorder">Akkorder</button>
+      </div>
+      <div class="ctl-group" title="Transponer (halvtoner)">
+        <button type="button" id="trDown" aria-label="Ned en halvtone">−</button>
+        <span class="ctl-val" id="semis" title="Trykk for å nullstille">0</span>
+        <button type="button" id="trUp" aria-label="Opp en halvtone">+</button>
+      </div>
+      <div class="ctl-group" title="Tekststørrelse">
+        <button type="button" id="fsDown" aria-label="Mindre tekst">A−</button>
+        <button type="button" id="fsUp" aria-label="Større tekst">A+</button>
+      </div>
+    </div>
+    <div class="reader-scroll" id="readerScroll">
+      <div class="reader-page" id="readerPage"></div>
+    </div>
+  </section>
+
+</main>
+
+<input type="file" id="fileIn" hidden accept=".txt,.text,.cho,.crd,.pro,.chordpro,.docx">
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════════════════
+//  KONVERTERING: tekst med akkorder over teksten → ChordPro
+// ══════════════════════════════════════════════════════════
+
+// Akkordnavn (norsk og engelsk skrivemåte): C, Am, F#m, Hm, H7, Bb, G/H, Dsus4, Cmaj7, E7b9, N.C.
+const CHORD_RE = /^(?:N\.?C\.?|[A-H](?:#|b)?(?:maj|min|mi|dim|aug|sus|add|m|M|Δ|°|ø|\+)?\d{0,2}(?:(?:sus|add|maj|dim|aug|M|m)?(?:#|b|\+|-)?\d{1,2}|sus)*(?:\([^)]*\))?(?:\/[A-H](?:#|b)?)?)$/;
+const MARK_RE  = /^\(?(?:x\s*\d+|\d+\s*x|gj\.?|rep\.?)\)?$/i;   // x2, 2x
+const SEP_RE   = /^[|:\-–—%.\/\\*]+$/;                            // taktstreker og streker
+const NOTE_RE  = /^(?:repeat|repeter|rep\.|gjenta|gjentas|fade|spilles|nb\b|n\.b\.|obs\b|note\b|notat\b)/i;
+
+const LABEL_WORDS = 'refreng|refrain|chorus|refr|ref|cho|kor|vers|verse|strofe|bridge|bri|bro|intro|forspill|forsp|innledning|outro|avslutning|avslutn|ending|mellomspill|mellomsp|interlude|solo|instrumental|instr|coda';
+const LEAD_LABEL_RE = new RegExp('^(\\s*)((?:(?:' + LABEL_WORDS + ')\\.?(?:\\s?\\d{1,2})?|v\\.?\\d{1,2}|\\d{1,2}(?=[.)]))[.:)]?)(?=\\s|$)', 'i');
+
+const INSTR_NAMES = {
+  intro:'Intro', forspill:'Forspill', forsp:'Forspill', innledning:'Forspill',
+  outro:'Outro', avslutning:'Outro', avslutn:'Outro', ending:'Outro', coda:'Outro',
+  mellomspill:'Mellomspill', mellomsp:'Mellomspill', interlude:'Mellomspill',
+  solo:'Solo', instrumental:'Instrumental', instr:'Instrumental'
+};
+
+function normChord(c) {
+  c = c.replace(/♯/g, '#').replace(/♭/g, 'b');
+  return /^N\.?C\.?$/.test(c) ? 'N.C.' : c;
+}
+
+// Linje med bare akkorder → { chords:[{name,col}], notes:[], loose }, ellers null.
+// loose = akkordene står tett med ett mellomrom («G Am7 D G») og er ikke plassert over bestemte ord.
+function analyzeChordLine(line) {
+  let body = line;
+  const notes = [];
+  const nm = body.match(/\s+[\[(]([^\])]*)[\])]\s*$/);
+  if (nm) {
+    const inner = nm[1].trim();
+    if (inner && !CHORD_RE.test(normChord(inner))) { notes.push(inner); body = body.slice(0, nm.index); }
+  }
+  const chords = [];
+  const toks = [];
+  for (const m of body.matchAll(/\S+/g)) {
+    const t = m[0];
+    toks.push({ start: m.index, end: m.index + t.length });
+    if (SEP_RE.test(t)) continue;
+    const lead = (t.match(/^[|(\[:]+/) || [''])[0].length;
+    const c = t.slice(lead).replace(/[|)\]:,;]+$/, '');
+    if (c === '') continue;
+    const cc = normChord(c);
+    if (CHORD_RE.test(cc)) { chords.push({ name: cc, col: m.index + lead }); continue; }
+    if (MARK_RE.test(c)) { notes.push(c.replace(/[()]/g, '')); continue; }
+    if (c.includes('-')) {                       // Am-D, G-D/F#  → to akkorder
+      let off = 0, ok = true;
+      const parts = [];
+      for (const p of c.split('-')) {
+        if (p !== '') {
+          const pc = normChord(p);
+          if (CHORD_RE.test(pc)) parts.push({ name: pc, col: m.index + lead + off }); else { ok = false; break; }
+        }
+        off += p.length + 1;
+      }
+      if (ok && parts.length) { chords.push(...parts); continue; }
+    }
+    return null;
+  }
+  if (!chords.length) return null;
+  let loose = chords.length > 1;
+  for (let i = 1; i < toks.length && loose; i++) if (toks[i].start - toks[i - 1].end !== 1) loose = false;
+  return { chords, notes, loose };
+}
+
+function parseLabel(head) {
+  const h = head.trim().replace(/[.:)]+$/, '').trim();
+  let m;
+  if ((m = h.match(/^(\d{1,2})$/))) return { type: 'verse', num: m[1] };
+  if ((m = h.match(/^(?:vers|verse|strofe|v)\.?\s?(\d{1,2})?$/i))) return { type: 'verse', num: m[1] || '' };
+  if ((m = h.match(/^(?:refreng|refrain|chorus|refr|ref|cho|kor)\.?\s?(\d{1,2})?$/i))) return { type: 'chorus', num: m[1] || '' };
+  if ((m = h.match(/^(?:bridge|bri|bro)\.?\s?(\d{1,2})?$/i))) return { type: 'bridge', num: m[1] || '' };
+  if ((m = h.match(/^(intro|forspill|forsp|innledning|outro|avslutning|avslutn|ending|mellomspill|mellomsp|interlude|solo|instrumental|instr|coda)\.?\s?(\d{1,2})?$/i)))
+    return { type: 'instr', name: INSTR_NAMES[m[1].toLowerCase()], num: m[2] || '' };
+  return null;
+}
+
+// Del-merke i venstre marg («1.», «Ref», «Bri.1», «Forsp.», «[Chorus]»).
+// rest = linjen med merket byttet ut med mellomrom, slik at kolonnene fortsatt stemmer med akkordlinjen over.
+function splitLabel(line) {
+  let m = line.match(/^\s*[\[(]\s*([^\])]+?)\s*[\])]\s*:?\s*$/);
+  if (m) {
+    const label = parseLabel(m[1]);
+    return label ? { label, rest: '', headEnd: line.length } : null;
+  }
+  m = line.match(LEAD_LABEL_RE);
+  if (!m) return null;
+  const head = m[2];
+  const after = line.slice(m[0].length);
+  const marked = /[.:)\d]$/.test(head);
+  if (!marked && after.trim() !== '' && !/^\s{2,}/.test(after)) return null;
+  const label = parseLabel(head);
+  if (!label) return null;
+  const end = m[1].length + head.length;
+  return { label, rest: ' '.repeat(end) + after, headEnd: end };
+}
+
+function expandTabs(s) {
+  let out = '', col = 0;
+  for (const ch of s) {
+    if (ch === '\t') { const n = 8 - (col % 8); out += ' '.repeat(n); col += n; }
+    else { out += ch; col++; }
+  }
+  return out;
+}
+
+const isDecor = t => /^[*=_~#+\-–—.·•]{4,}$/.test(t);
+const isBox   = t => t.length >= 5 && /^\*.*\*$/.test(t);
+const isTab   = l => /-{3,}/.test(l) && /^\s*[A-Ga-g][#b]?\s*[|:][-0-9hpbrsx\/\\~^()|.\s*<>]*$/.test(l);
+
+const WEB_JUNK = new Set(['fullskjerm', 'vis grep', 'skjul grep', 'transponer', 'lytt', 'skriv ut', 'mer', 'tilpass bredde',
+  'vis uformatert', 'til chordpro', 'sakte', 'middels', 'raskt', 'original', 'print', 'autoscroll', 'søk med spotify', 'søk på youtube']);
+const isWebJunk = t => WEB_JUNK.has(t.toLowerCase()) || /^[+-]\d+ halvtoner?$/i.test(t) ||
+                       /^av\s+\S.*\s\d{1,2}\/\d{1,2}-\d{4}$/i.test(t);
+const STRUCT_KINDS = ['chords', 'labelonly', 'labelchords', 'labeltext', 'tab'];
+
+function classify(lines, opts) {
+  const kinds = lines.map(line => {
+    const t = line.trim();
+    if (t === '') return { kind: 'blank' };
+    if (opts.stripBoxes) {
+      if (isDecor(t)) return { kind: 'skip' };
+      if (isBox(t)) return { kind: 'boxcand', text: t.replace(/^\*+\s*|\s*\*+$/g, '') };
+      if (isWebJunk(t)) return { kind: 'junkcand' };
+    }
+    const nm = t.match(/^(?:\/\/|>)\s?(.*)$/);
+    if (nm) return { kind: 'note', text: nm[1] };
+    if (isTab(line)) return { kind: 'tab' };
+    const lab = splitLabel(line);
+    if (lab) {
+      if (lab.rest.trim() === '') return { kind: 'labelonly', label: lab.label, headEnd: lab.headEnd };
+      const ch = analyzeChordLine(lab.rest);
+      if (ch) return { kind: 'labelchords', label: lab.label, headEnd: lab.headEnd, chords: ch };
+      return { kind: 'labeltext', label: lab.label, headEnd: lab.headEnd, rest: lab.rest };
+    }
+    const ch = analyzeChordLine(line);
+    if (ch) return { kind: 'chords', chords: ch };
+    return { kind: 'text' };
+  });
+
+  // «*tekst*» er ramme (hoppes over) når den henger sammen med en rad med stjerner, ellers en merknad
+  for (let i = 0; i < kinds.length; i++) {
+    if (kinds[i].kind !== 'boxcand') continue;
+    let a = i, b = i;
+    while (a > 0 && kinds[a - 1].kind !== 'blank') a--;
+    while (b < kinds.length - 1 && kinds[b + 1].kind !== 'blank') b++;
+    let framed = false;
+    for (let j = a; j <= b; j++) if (kinds[j].kind === 'skip') framed = true;
+    for (let j = a; j <= b; j++) {
+      if (kinds[j].kind !== 'boxcand') continue;
+      kinds[j] = framed ? { kind: 'skip' } : { kind: 'note', text: kinds[j].text };
+    }
+  }
+  // Rester fra nettsider (fullskjerm, vis grep …) fjernes bare øverst og nederst i teksten
+  const first = kinds.findIndex(k => STRUCT_KINDS.includes(k.kind));
+  let last = -1;
+  kinds.forEach((k, i) => { if (STRUCT_KINDS.includes(k.kind)) last = i; });
+  kinds.forEach((k, i) => {
+    if (k.kind === 'junkcand') kinds[i] = (first < 0 || i < first || i > last) ? { kind: 'skip' } : { kind: 'text' };
+  });
+  return kinds;
+}
+
+// Tittel, artist og annet øverst i teksten (før første akkordlinje eller del-merke)
+function detectHeader(lines, kinds) {
+  const STRUCT = ['chords', 'labelonly', 'labelchords', 'labeltext', 'tab'];
+  const first = kinds.findIndex(k => STRUCT.includes(k.kind));
+  if (first < 0) return null;
+  const idx = [];
+  for (let i = 0; i < first; i++) if (kinds[i].kind === 'text') idx.push(i);
+  if (!idx.length || idx.length > 5) return null;
+  const last = idx[idx.length - 1];
+  if (!kinds.slice(last + 1, first).some(k => k.kind === 'blank')) return null;
+  if (idx.some(i => lines[i].trim().length > 70)) return null;
+
+  const hdr = { title: '', artist: '', subtitle: [], comments: [], capo: '', key: '' };
+  for (const i of idx) {
+    kinds[i] = { kind: 'header' };
+    const t = lines[i].trim();
+    let m;
+    if ((m = t.match(/^capo\s*(?:på|i|at|:|=)?\s*(\d{1,2})\.?\s*(?:bånd|fret)?\.?\s*(.*)$/i))) {
+      hdr.capo = m[1];
+      if (m[2].replace(/[-–:,.\s]+/g, '')) hdr.comments.push(t);
+    } else if ((m = t.match(/^(?:key|toneart|tonart)\s*[:=]?\s*([A-Ha-h][#b]?m?)\s*$/i))) {
+      hdr.key = m[1][0].toUpperCase() + m[1].slice(1);
+    } else if (hdr.title && (m = t.match(/^(?:[-–—]\s*|(?:av|by|artist|fremført av|framført av)\s*:?\s+)(.+)$/i))) {
+      hdr.artist = m[1].trim();
+    } else if (hdr.title && /^\(.*\)$/.test(t)) {
+      const inner = t.slice(1, -1).trim();
+      hdr.subtitle.push(inner.charAt(0).toUpperCase() + inner.slice(1));
+    } else if (/^(?:tekst|musikk|melodi|text|lyrics|words|music|arr|arrangement|komponist)\b.*:/i.test(t)) {
+      hdr.subtitle.push(t);
+    } else if (!hdr.title) {
+      hdr.title = t.replace(/^["«»“”']+|["«»“”']+$/g, '').trim();
+    } else {
+      hdr.comments.push(t);
+    }
+  }
+  return hdr;
+}
+
+// Akkorder + tekstlinje → ChordPro-linje
+function mergeLine(raw, chordInfo, opts) {
+  let s = raw.search(/\S/);
+  if (s < 0) s = raw.length;
+  let L = raw.slice(s).replace(/\s+$/, '');
+
+  let note = '';
+  const nm = L.match(/\s*\[([^\]]*)\]\s*$/);
+  if (nm && nm[1] && nm[1][0] !== '*' && !CHORD_RE.test(normChord(nm[1].trim()))) {
+    note = nm[1].trim();
+    L = L.slice(0, nm.index).replace(/\s+$/, '');
+  }
+  const notes = (chordInfo ? chordInfo.notes : []).concat(note ? [note] : []);
+  const tail = notes.map(n => '[*' + n + ']').join(' ');
+
+  if (!chordInfo) return { text: L + (tail ? (L ? ' ' : '') + tail : ''), plain: L, hasChords: false };
+
+  let items;
+  const tol = Number(opts.snap) || 0;
+  if (chordInfo.loose && L) {
+    // Akkorder uten plassering: sett dem først, eller fordel dem jevnt på ordene
+    const starts = [...L.matchAll(/\S+/g)].map(m => m.index);
+    const n = chordInfo.chords.length, W = starts.length;
+    items = chordInfo.chords.map((c, i) => ({
+      name: c.name, i,
+      pos: opts.loose === 'start' ? 0 : starts[Math.min(W - 1, Math.floor(i * W / n))]
+    }));
+  } else {
+    items = chordInfo.chords.map((c, i) => ({ name: c.name, pos: Math.max(0, c.col - s), i }));
+  }
+  if (tol && !(chordInfo.loose && L)) {
+    for (const it of items) {
+      const p = it.pos;
+      if (p >= L.length) continue;
+      if (/\s/.test(L[p])) {                       // over et mellomrom → neste ordstart
+        let q = p;
+        while (q < L.length && /\s/.test(L[q])) q++;
+        it.pos = q;
+      } else if (p > 0 && !/\s/.test(L[p - 1])) {  // like innenfor ordstart → ordstart
+        let ws = p;
+        while (ws > 0 && !/\s/.test(L[ws - 1])) ws--;
+        if (p - ws <= tol) it.pos = ws;
+      }
+    }
+  }
+  items.sort((a, b) => a.pos - b.pos || a.i - b.i);
+
+  let out = '', last = 0, k = 0;
+  const trailing = [];
+  for (const it of items) {
+    if (it.pos >= L.length) { trailing.push(it); continue; }
+    out += L.slice(last, it.pos) + '[' + it.name + ']';
+    last = it.pos;
+  }
+  out += L.slice(last);
+  for (const it of trailing) {
+    out += ((k === 0 && it.pos === L.length) || out === '' ? '' : ' ') + '[' + it.name + ']';
+    k++;
+  }
+  if (tail) out += ' ' + tail;
+  return { text: out, plain: L, hasChords: true };
+}
+
+const stripChords = s => s.replace(/\[[^\]]*\]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+function convert(srcRaw, opts, ov) {
+  ov = ov || {};
+  const src = String(srcRaw).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  const lines = src.split('\n').map(l => expandTabs(l.replace(/\u00a0/g, ' ')).replace(/\s+$/, ''));
+  const kinds = classify(lines, opts);
+  const hdr = opts.header ? detectHeader(lines, kinds) : null;
+  const notes = [];
+
+  // Word-dokumenter og noen nettsider har en blank linje mellom hver linje → fjern dem
+  let order = lines.map((_, i) => i);
+  if (opts.collapse) {
+    const nb = kinds.map(k => k.kind !== 'blank');
+    let n = 0, adj = 0;
+    nb.forEach((v, i) => { if (v) { n++; if (nb[i + 1]) adj++; } });
+    const anyChords = kinds.some(k => k.kind === 'chords' || k.kind === 'labelchords');
+    if (n >= 4 && adj === 0 && anyChords && kinds.some(k => k.kind === 'text' || k.kind === 'labeltext')) {
+      const keep = [];
+      for (let i = 0; i < lines.length; i++) {
+        if (kinds[i].kind !== 'blank') { keep.push(i); continue; }
+        let j = i; while (j < lines.length && kinds[j].kind === 'blank') j++;
+        if (j - i > 1 && keep.length) keep.push(i);      // flere blanke på rad = avsnittsskille
+        i = j - 1;
+      }
+      order = keep;
+      notes.push('Fant en blank linje mellom hver linje (dobbel linjeavstand) – de er fjernet. Avsnitt må du skille med to blanke linjer.');
+    }
+  }
+
+  const secs = [];
+  let cur = null, pending = null;
+  const allChords = [];
+  const stats = { chordLines: 0, lyricLines: 0, sections: 0, loose: 0 };
+
+  const ensure = () => { if (!cur) cur = { type: 'plain', lines: [] }; };
+  const close = () => {
+    if (!cur) return;
+    if (cur.type === 'tab') {
+      const ind = Math.min(...cur.lines.map(l => l.tab.search(/\S/)));
+      cur.lines = cur.lines.map(l => ({ text: l.tab.slice(ind) }));
+    }
+    if (cur.lines.length) secs.push(cur);
+    else if (cur.explicit) {
+      if (cur.type === 'chorus') secs.push({ type: 'chorus', recall: true, lines: [] });
+      else if (cur.type === 'instr') secs.push({ type: 'note', text: cur.name + (cur.num ? ' ' + cur.num : '') });
+    }
+    cur = null;
+  };
+  const open = label => { close(); cur = { type: label.type, num: label.num, name: label.name, explicit: true, lines: [] }; };
+  const addNote = text => { if (cur) cur.lines.push({ note: text }); else secs.push({ type: 'note', text }); };
+  const flush = () => {
+    if (!pending) return;
+    ensure();
+    const text = pending.chords.map(c => '[' + c.name + ']').join('  ') +
+                 pending.notes.map(n => '  [*' + n + ']').join('');
+    cur.lines.push({ text, plain: '', hasChords: true });
+    allChords.push(...pending.chords.map(c => c.name));
+    stats.chordLines++;
+    pending = null;
+  };
+  const addLyric = (raw, p) => {
+    ensure();
+    const r = mergeLine(raw, p, opts);
+    cur.lines.push(r);
+    stats.lyricLines++;
+    if (p) {
+      allChords.push(...p.chords.map(c => c.name));
+      stats.chordLines++;
+      if (p.loose && raw.trim()) { stats.loose++; p.spread = true; }
+    }
+  };
+
+  for (const i of order) {
+    const k = kinds[i];
+    switch (k.kind) {
+      case 'blank':
+        flush();
+        // «[Chorus]» + blank linje + tekst: merket hører til teksten under
+        if (!(cur && cur.explicit && cur.lines.length === 0)) close();
+        break;
+      case 'skip': case 'header': break;
+      case 'note': flush(); addNote(k.text); break;
+      case 'tab':
+        flush();
+        if (!cur || cur.type !== 'tab') { close(); cur = { type: 'tab', lines: [] }; }
+        cur.lines.push({ tab: lines[i] });
+        break;
+      case 'chords':
+        flush();
+        if (cur && cur.type === 'tab') close();
+        pending = k.chords;
+        break;
+      case 'text': {
+        if (!pending && NOTE_RE.test(lines[i].trim())) { addNote(lines[i].trim()); break; }
+        if (cur && cur.type === 'tab') close();
+        const p = pending; pending = null;
+        addLyric(lines[i], p);
+        break;
+      }
+      case 'labelonly': flush(); open(k.label); break;
+      case 'labelchords': flush(); open(k.label); pending = k.chords; break;
+      case 'labeltext': { const p = pending; pending = null; open(k.label); addLyric(k.rest, p); break; }
+    }
+  }
+  flush(); close();
+
+  // Finn refreng automatisk: avsnitt uten merke som gjentas ordrett
+  if (opts.autoChorus && !secs.some(s => s.type === 'chorus')) {
+    const groups = new Map();
+    secs.forEach(s => {
+      if (s.type !== 'plain' && s.type !== 'verse') return;
+      const key = s.lines.map(l => stripChords(l.text || '')).join(' ');
+      if (key.length < 20) return;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(s);
+    });
+    groups.forEach(arr => { if (arr.length > 1) arr.forEach(s => { s.type = 'chorus'; s.num = ''; }); });
+  }
+
+  // Gjentatt refreng → {chorus}
+  if (opts.chorusRecall) {
+    let last = null;
+    const canon = s => s.lines.map(l => l.text).join('\n');
+    const key = s => s.lines.map(l => stripChords(l.text || '')).join(' ');
+    const has = s => s.lines.some(l => l.hasChords);
+    for (const s of secs) {
+      if (s.type !== 'chorus' || s.recall) continue;
+      if (last && key(s) === key(last) && (canon(s) === canon(last) || !has(s))) { s.recall = true; s.lines = []; continue; }
+      last = s;
+    }
+  }
+
+  // ── Metadata ──
+  const firstChord = allChords.find(c => /^[A-H]/.test(c)) || '';
+  const km = firstChord.match(/^([A-H][#b]?)(m(?!aj)|min)?/);
+  const guessKey = km ? km[1] + (km[2] ? 'm' : '') : '';
+  const detected = {
+    title: hdr ? hdr.title : '',
+    artist: hdr ? hdr.artist : '',
+    key: (hdr && hdr.key) || guessKey,
+    capo: hdr ? hdr.capo : '',
+    subtitle: hdr && hdr.subtitle.length ? hdr.subtitle[0] : ''
+  };
+  const title = (ov.title || detected.title).trim();
+  const artist = (ov.artist || detected.artist).trim();
+  const key = (ov.key || detected.key).trim();
+  const capo = String(ov.capo || detected.capo).trim();
+  const subs = ov.subtitle && ov.subtitle.trim() ? [ov.subtitle.trim()] : (hdr ? hdr.subtitle : []);
+
+  const out = [];
+  const head = [];
+  if (title) head.push('{title: ' + title + '}');
+  subs.forEach(s => head.push('{subtitle: ' + s + '}'));
+  if (artist) head.push('{artist: ' + artist + '}');
+  if (key) head.push('{key: ' + key + '}');
+  if (capo) head.push('{capo: ' + capo + '}');
+  if (hdr) hdr.comments.forEach(c => head.push('{comment: ' + c + '}'));
+  if (head.length) out.push(head.join('\n'));
+
+  if (stats.loose) notes.push(stats.loose + (stats.loose === 1 ? ' akkordlinje' : ' akkordlinjer') +
+    ' hadde akkorder uten plassering over bestemte ord – ' +
+    (opts.loose === 'start' ? 'de er satt først på linjen.' : 'de er fordelt jevnt utover linjen. Sjekk at de havner riktig.'));
+  let verseNo = 0;
+  secs.forEach(s => { if (s.type === 'verse') { verseNo++; if (!s.num) s.num = String(verseNo); } });
+
+  const body = s => s.lines.map(l => l.note !== undefined ? '{comment: ' + l.note + '}' : l.text).join('\n');
+  for (const s of secs) {
+    let t;
+    switch (s.type) {
+      case 'note': t = '{comment: ' + s.text + '}'; break;
+      case 'chorus':
+        t = s.recall ? '{chorus}'
+          : '{start_of_chorus' + (s.num ? ': Refreng ' + s.num : '') + '}\n' + body(s) + '\n{end_of_chorus}';
+        break;
+      case 'bridge':
+        t = '{start_of_bridge' + (s.num ? ': Bridge ' + s.num : '') + '}\n' + body(s) + '\n{end_of_bridge}';
+        break;
+      case 'verse':
+        t = opts.verseLabels && s.num
+          ? '{start_of_verse: Vers ' + s.num + '}\n' + body(s) + '\n{end_of_verse}'
+          : body(s);
+        break;
+      case 'instr':
+        t = '{comment: ' + s.name + (s.num ? ' ' + s.num : '') + '}\n' + body(s);
+        break;
+      case 'tab': t = '{start_of_tab}\n' + body(s) + '\n{end_of_tab}'; break;
+      default: t = body(s);
+    }
+    out.push(t);
+  }
+  stats.sections = secs.length;
+  const text = out.join('\n\n');
+  return { text: text ? text + '\n' : '', kinds, detected, stats, notes, src };
+}
+
+// Filnavn: «Mil etter mil» + G → Mil_etter_mil_G.txt   (F#m → Fism, som i arkivet sin _C-konvensjon)
+function suggestFilename(title, key) {
+  let t = (title || '').trim().replace(/[\\/:*?"<>|%&{}\[\]]/g, '').replace(/\s+/g, '_').replace(/^[._]+/, '').replace(/[._]+$/, '');
+  if (!t) t = 'sang';
+  const k = (key || '').trim().replace(/#/g, 'is').replace(/[^\w]/g, '');
+  return t + (k ? '_' + k : '') + '.txt';
+}
+
+// ══════════════════════════════════════════════════════════
+//  WORD (.docx) → ren tekst, ett avsnitt per linje
+// ══════════════════════════════════════════════════════════
+function docxXmlToText(xml) {
+  const dec = s => s.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (m, g) => {
+    if (g[0] === '#') return String.fromCodePoint(g[1].toLowerCase() === 'x' ? parseInt(g.slice(2), 16) : parseInt(g.slice(1), 10));
+    return { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }[g.toLowerCase()];
+  });
+  const re = /<w:p\b[^>]*\/>|<w:p\b[^>]*>|<\/w:p>|<w:t\b[^>]*?(?<!\/)>([\s\S]*?)<\/w:t>|<w:tab\s*\/>|<w:br\b[^>]*\/>|<w:cr\s*\/>/g;
+  const lines = [];
+  let cur = null;
+  for (const m of xml.matchAll(re)) {
+    const s = m[0];
+    if (s.startsWith('<w:p') && s.endsWith('/>')) lines.push('');
+    else if (s.startsWith('<w:p')) cur = '';
+    else if (s === '</w:p>') { lines.push(cur || ''); cur = null; }
+    else if (s.startsWith('<w:tab')) cur = (cur || '') + '\t';
+    else if (s.startsWith('<w:br') || s.startsWith('<w:cr')) cur = (cur || '') + '\n';
+    else cur = (cur || '') + dec(m[1]);
+  }
+  return lines.join('\n');
+}
+
+// Minimal zip-leser: henter word/document.xml. inflate(Uint8Array) → Promise<ArrayBuffer|Uint8Array>
+async function readDocx(buf, inflate) {
+  const u8 = new Uint8Array(buf), dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  let e = u8.length - 22;
+  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('Dette ser ikke ut som en .docx-fil.');
+  const n = dv.getUint16(e + 10, true);
+  let p = dv.getUint32(e + 16, true);
+  let entry = null;
+  for (let i = 0; i < n; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true);
+    const off = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl));
+    if (name === 'word/document.xml') { entry = { method, csize, off }; break; }
+    p += 46 + nl + el + cl;
+  }
+  if (!entry) throw new Error('Fant ikke teksten i Word-filen.');
+  const start = entry.off + 30 + dv.getUint16(entry.off + 26, true) + dv.getUint16(entry.off + 28, true);
+  let data = u8.subarray(start, start + entry.csize);
+  if (entry.method === 8) data = new Uint8Array(await inflate(data));
+  else if (entry.method !== 0) throw new Error('Ukjent komprimering i Word-filen.');
+  return docxXmlToText(new TextDecoder('utf-8').decode(data));
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  Visning: samme lesing, transponering og tegning som i Sangarkivet (index.html)
+// ══════════════════════════════════════════════════════════
+const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const CP_ALIASES = {
+  t:'title', st:'subtitle', su:'subtitle',
+  c:'comment', ci:'comment_italic', cb:'comment_box',
+  soc:'start_of_chorus', eoc:'end_of_chorus',
+  sov:'start_of_verse',  eov:'end_of_verse',
+  sob:'start_of_bridge', eob:'end_of_bridge',
+  sot:'start_of_tab',    eot:'end_of_tab',
+  sog:'start_of_grid',   eog:'end_of_grid'
+};
+
+// {start_of_chorus: label="Refreng"} eller {sov: Vers 1}
+function cpLabel(raw) {
+  if (!raw) return '';
+  const m = raw.match(/label\s*=\s*"([^"]*)"/i) || raw.match(/label\s*=\s*'([^']*)'/i);
+  return (m ? m[1] : raw.replace(/^label\s*=\s*/i, '')).trim();
+}
+
+// Tekst → { meta, items }. Items er blokker (vers/refreng/…), kommentarer og refreng-gjentakelser.
+function parseChordPro(text) {
+  const meta = { title:'', artist:'', subtitle:[], key:'', capo:'', transpose:0, norwegian:false, firstChord:'' };
+  const items = [];
+  let cur = null, explicit = false, lastChorus = null;
+
+  const close = () => {
+    if (cur) {
+      while (cur.lines.length && cur.lines[cur.lines.length - 1] === '') cur.lines.pop();
+      while (cur.lines.length && cur.lines[0] === '') cur.lines.shift();
+      if (cur.lines.length) {
+        items.push(cur);
+        if (cur.kind === 'chorus') lastChorus = cur;
+      }
+    }
+    cur = null; explicit = false;
+  };
+  const open = (kind, label, isExplicit) => {
+    close();
+    cur = { t:'block', kind, label, lines:[] };
+    explicit = isExplicit;
+  };
+
+  const rows = String(text).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').split('\n');
+  for (const raw of rows) {
+    const line = raw.replace(/\s+$/, '');
+    const trimmed = line.trim();
+    if (trimmed.startsWith('#')) continue;   // ChordPro-kommentar (vises ikke)
+
+    const dm = trimmed.match(/^\{\s*([^:}\s]+)\s*(?::\s*|\s+)?(.*?)\s*\}$/);
+    if (dm) {
+      const key = dm[1].toLowerCase();
+      const name = CP_ALIASES[key] || key;
+      const arg = dm[2] || '';
+      switch (name) {
+        case 'title':     meta.title = arg; break;
+        case 'subtitle':  if (arg) meta.subtitle.push(arg); break;
+        case 'artist':    meta.artist = arg; break;
+        case 'composer':  if (arg) meta.subtitle.push('Musikk: ' + arg); break;
+        case 'lyricist':  if (arg) meta.subtitle.push('Tekst: ' + arg); break;
+        case 'key':       meta.key = arg; break;
+        case 'capo':      meta.capo = arg; break;
+        case 'transpose': meta.transpose = parseInt(arg, 10) || 0; break;
+        case 'comment':
+        case 'comment_italic':
+        case 'comment_box': {
+          const style = name === 'comment_italic' ? 'italic' : name === 'comment_box' ? 'box' : 'normal';
+          if (cur && explicit) cur.lines.push({ comment: style, text: arg });
+          else { close(); items.push({ t:'comment', style, text: arg }); }
+          break;
+        }
+        case 'start_of_chorus': open('chorus', cpLabel(arg), true); break;
+        case 'start_of_verse':  open('verse',  cpLabel(arg), true); break;
+        case 'start_of_bridge': open('bridge', cpLabel(arg), true); break;
+        case 'start_of_tab':
+        case 'start_of_grid':   open('tab',    cpLabel(arg), true); break;
+        case 'end_of_chorus':
+        case 'end_of_verse':
+        case 'end_of_bridge':
+        case 'end_of_tab':
+        case 'end_of_grid':     close(); break;
+        case 'chorus':          // gjenta siste refreng
+          if (!(cur && explicit)) { close(); items.push({ t:'recall', label: cpLabel(arg), ref: lastChorus }); }
+          break;
+        default: break;         // ukjente direktiver ignoreres
+      }
+      continue;
+    }
+
+    if (trimmed === '') {
+      if (cur && explicit) cur.lines.push('');
+      else close();           // tom linje avslutter et vers utenfor seksjoner
+      continue;
+    }
+    if (!cur) open('verse', '', false);
+    cur.lines.push(line);
+  }
+  close();
+
+  // Finn akkordene: H i akkordnavn (H, Hm, H7) betyr norsk skrivemåte der B = b-dur, H = h-dur
+  const chords = [];
+  items.forEach(it => {
+    if (it.t !== 'block' || it.kind === 'tab') return;
+    it.lines.forEach(l => {
+      if (typeof l !== 'string') return;
+      for (const m of l.matchAll(/\[([^\]]+)\]/g)) chords.push(m[1]);
+    });
+  });
+  meta.norwegian = chords.some(c => /^H/.test(c)) || /^H/.test(meta.key);
+  meta.firstChord = chords.find(c => /^[A-H]/.test(c)) || '';
+  return { meta, items };
+}
+
+// ── Transponering ──
+const CP_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const CP_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const CP_BASE  = { C:0, D:2, E:4, F:5, G:7, A:9, H:11 };
+const mod12 = n => ((n % 12) + 12) % 12;
+
+function cpRootPc(s, no) {
+  const m = s.match(/^([A-H])([#b]?)$/);
+  if (!m) return null;
+  const L = m[1], acc = m[2];
+  if (L === 'B') return acc === 'b' ? 10 : acc === '#' ? 0 : (no ? 10 : 11);
+  return mod12(CP_BASE[L] + (acc === '#' ? 1 : acc === 'b' ? -1 : 0));
+}
+
+function cpPcName(pc, flats, no) {
+  pc = mod12(pc);
+  if (no) { if (pc === 11) return 'H'; if (pc === 10) return 'B'; }
+  return (flats ? CP_FLAT : CP_SHARP)[pc];
+}
+
+function cpTranspose(chord, n, ctx) {
+  if (!n) return chord;
+  const m = chord.match(/^([A-H][#b]?)(.*)$/);
+  if (!m) return chord;
+  const pc = cpRootPc(m[1], ctx.no);
+  if (pc === null) return chord;
+  const rest = m[2].replace(/\/([A-H][#b]?)$/, (all, b) => {
+    const bp = cpRootPc(b, ctx.no);
+    return bp === null ? all : '/' + cpPcName(bp + n, ctx.flats, ctx.no);
+  });
+  return cpPcName(pc + n, ctx.flats, ctx.no) + rest;
+}
+
+// b-toneart (F, B♭, E♭, A♭, D♭ dur og tilhørende moll) → skriv b-er, ellers kryss
+function cpUseFlats(meta, n) {
+  const src = meta.key || meta.firstChord;
+  const m = src && src.match(/^([A-H][#b]?)(m(?!aj)|min)?/);
+  if (!m) return false;
+  const pc = cpRootPc(m[1], meta.norwegian);
+  if (pc === null) return false;
+  const major = m[2] ? pc + 3 : pc;
+  return [5, 10, 3, 8, 1].includes(mod12(major + n));
+}
+
+// ── Tegning ──
+function cpChordHtml(ch, n, ctx) {
+  if (!ch) return '';
+  if (ch[0] === '*') return `<span class="cp-ann">${escHtml(ch.slice(1))}</span>`;   // [*Tekst] = merknad, ikke akkord
+  return escHtml(cpTranspose(ch.trim(), n, ctx));
+}
+
+// Linje som bare består av akkorder (intro, mellomspill)
+function cpChordOnly(line) {
+  return /\[[^\]]*\]/.test(line) && line.replace(/\[[^\]]*\]/g, '').trim() === '';
+}
+
+// Én tekstlinje med [akkorder] → akkorder over ordene.
+// Hvert ord (med akkorder midt i ordet) er en udelelig gruppe, slik at linjer brytes mellom ord.
+function cpRenderLine(line, n, ctx) {
+  const parts = [];
+  const re = /\[([^\]]*)\]/g;
+  let idx = 0, pending = '', m;
+  while ((m = re.exec(line)) !== null) {
+    const text = line.slice(idx, m.index);
+    if (text !== '' || pending !== '') parts.push({ chord: pending, text });
+    pending = m[1];
+    idx = m.index + m[0].length;
+  }
+  const rest = line.slice(idx);
+  if (rest !== '' || pending !== '') parts.push({ chord: pending, text: rest });
+
+  if (!parts.some(p => p.chord)) return `<div class="cp-plain">${escHtml(line)}</div>`;
+
+  const atoms = [];
+  parts.forEach(p => {
+    const pieces = p.text.match(/\S+\s*|\s+/g) || [''];
+    pieces.forEach((t, i) => atoms.push({ chord: i === 0 ? p.chord : '', text: t }));
+  });
+
+  const groups = [];
+  let g = [];
+  atoms.forEach(a => {
+    g.push(a);
+    if (/\s$/.test(a.text)) { groups.push(g); g = []; }
+  });
+  if (g.length) groups.push(g);
+
+  const html = groups.map(grp =>
+    '<span class="cp-w">' + grp.map(a =>
+      `<span class="cp-seg"><span class="cp-chord">${cpChordHtml(a.chord, n, ctx)}</span><span class="cp-lyr">${escHtml(a.text)}</span></span>`
+    ).join('') + '</span>'
+  ).join('');
+  return `<div class="cp-line${cpChordOnly(line) ? ' cp-chordonly' : ''}">${html}</div>`;
+}
+
+function cpCommentHtml(style, text) {
+  const cls = style === 'italic' ? ' italic' : style === 'box' ? ' box' : '';
+  return `<div class="cp-comment${cls}">${escHtml(text)}</div>`;
+}
+
+function cpRenderBlock(b, n, ctx) {
+  const label = b.label || ({ chorus:'Refreng', bridge:'Bridge' }[b.kind] || '');
+  let body;
+  if (b.kind === 'tab') {
+    body = `<pre class="cp-tab">${escHtml(b.lines.filter(l => typeof l === 'string').join('\n'))}</pre>`;
+  } else {
+    body = b.lines.map(l =>
+      typeof l !== 'string' ? cpCommentHtml(l.comment, l.text)
+      : l.trim() === ''     ? '<div class="cp-gap"></div>'
+      : cpRenderLine(l, n, ctx)
+    ).join('');
+  }
+  const strs = b.kind === 'tab' ? [] : b.lines.filter(l => typeof l === 'string' && l.trim() !== '');
+  const instr = strs.length > 0 && strs.every(cpChordOnly);   // seksjon med bare akkorder
+  return `<section class="cp-block cp-k-${b.kind}${instr ? ' cp-k-instr' : ''}">${label ? `<div class="cp-label">${escHtml(label)}</div>` : ''}${body}</section>`;
+}
+
+function cpRenderBody(parsed, n) {
+  const ctx = { no: parsed.meta.norwegian, flats: cpUseFlats(parsed.meta, n) };
+  return parsed.items.map(it => {
+    if (it.t === 'comment') return cpCommentHtml(it.style, it.text);
+    if (it.t === 'recall')  return it.ref ? cpRenderBlock(it.ref, n, ctx)
+                                          : `<div class="cp-label">${escHtml(it.label || 'Refreng')}</div>`;
+    return cpRenderBlock(it, n, ctx);
+  }).join('');
+}
+
+
+
+// ══════════════════════════════════════════════════════════
+//  Appen
+// ══════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const LS_KEY = 'sangkonverterer_v1';
+const CP_FS_KEY = 'sangarkiv_cp_fs';       // deles med Sangarkivet
+const CP_CH_KEY = 'sangarkiv_cp_chords';
+const GH_REPO_KEY = 'sangarkiv_ghrepo';
+
+const DEFAULT_OPTS = { header: true, stripBoxes: true, collapse: true, chorusRecall: true, autoChorus: false, verseLabels: false, snap: 2, loose: 'spread' };
+const S = {
+  src: '', cp: '', dirty: false, stale: false,
+  fields: { title: '', artist: '', key: '', capo: '', subtitle: '' },
+  opts: { ...DEFAULT_OPTS },
+  panes: { orig: true, cp: true, view: true },
+  semis: null, fn: '', fnDirty: false
+};
+let lastRes = null;
+let lastPane = 'cp';
+let ghBranch = 'main';
+let readerFs = 1.05, readerChords = true;
+try { const v = parseFloat(localStorage.getItem(CP_FS_KEY)); if (v >= 0.8 && v <= 2) readerFs = v; } catch {}
+try { readerChords = localStorage.getItem(CP_CH_KEY) !== '0'; } catch {}
+
+const SAMPLE = `Eksempelsang
+- Kari Nordmann
+
+Forsp. | G | C | G | D |
+
+       G   C      G
+1.     Her kommer første verset,
+       G            C    D
+       med akkorder over teksten.
+
+       C     G         D         G
+Ref    Og så synger vi refrenget sammen,
+       C      G         D      G
+       ja, så synger vi det en gang til.
+
+       G     C             G
+2.     Nå er verset nummer to,
+       G  C                 D
+       og litt annerledes å se.   [2 ganger]
+
+       C     G         D         G
+Ref    Og så synger vi refrenget sammen,
+       C      G         D      G
+       ja, så synger vi det en gang til.
+`;
+
+// ── Fargelegging ──
+function hlOrig(text) {
+  const lines = text.split('\n');
+  const kinds = lastRes && lastRes.kinds.length === lines.length ? lastRes.kinds : null;
+  return lines.map((ln, i) => {
+    const k = kinds && kinds[i];
+    if (!k) return escHtml(ln);
+    const wrap = (cls, s) => cls ? `<span class="${cls}">${escHtml(s)}</span>` : escHtml(s);
+    switch (k.kind) {
+      case 'chords': return wrap(k.chords.spread ? 'k-loose' : 'k-chords', ln);
+      case 'header': return wrap('k-header', ln);
+      case 'skip':   return wrap('k-skip', ln);
+      case 'note':   return wrap('k-note', ln);
+      case 'tab':    return wrap('k-tab', ln);
+      case 'labelonly': return wrap('k-label', ln);
+      case 'labelchords':
+      case 'labeltext': {
+        const rest = k.kind === 'labelchords' ? (k.chords.spread ? 'k-loose' : 'k-chords') : '';
+        const he = k.headEnd;
+        if (ln.slice(0, he).includes('\t') || he > ln.length) return wrap('k-label', ln);
+        return wrap('k-label', ln.slice(0, he)) + wrap(rest, ln.slice(he));
+      }
+      default: return escHtml(ln);
+    }
+  }).join('\n');
+}
+
+function hlCp(text) {
+  return text.split('\n').map(ln => {
+    const e = escHtml(ln);
+    const t = ln.trimStart();
+    if (t.startsWith('#')) return `<span class="h-c">${e}</span>`;
+    if (/^\{.*\}\s*$/.test(t)) return `<span class="h-d">${e}</span>`;
+    return e.replace(/\[([^\]]*)\]/g, (m, c) => c[0] === '*' ? `<span class="h-ann">${m}</span>` : `<span class="h-ch">${m}</span>`);
+  }).join('\n');
+}
+
+function makeEditor(host, { label, placeholder, highlight, onInput }) {
+  host.innerHTML = '<pre aria-hidden="true"></pre><textarea spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>';
+  const pre = host.firstChild, ta = host.lastChild;
+  ta.setAttribute('aria-label', label);
+  ta.placeholder = placeholder;
+  const sync = () => { pre.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft; };
+  const render = () => { pre.innerHTML = '<span>' + highlight(ta.value) + '\n </span>'; sync(); };
+  ta.addEventListener('input', () => { render(); if (onInput) onInput(); });
+  ta.addEventListener('scroll', sync);
+  return { ta, host, render, get: () => ta.value, set(v) { ta.value = v; render(); } };
+}
+
+const srcEd = makeEditor($('edSrc'), {
+  label: 'Original tekst med akkorder',
+  placeholder: 'Lim inn en sang her, eller åpne en fil (.txt eller .docx).\n\nAkkordene skal stå på linjen over teksten, slik de gjør på Nortabs.\nTrykk «Eksempel» for å se hvordan det fungerer.',
+  highlight: hlOrig,
+  onInput: () => { S.src = srcEd.get(); runConvert(); }
+});
+const cpEd = makeEditor($('edCp'), {
+  label: 'ChordPro-tekst',
+  placeholder: 'ChordPro-teksten dukker opp her når du limer inn en sang til venstre.\nDu kan også skrive eller lime inn ChordPro direkte.',
+  highlight: hlCp,
+  onInput: () => {
+    S.cp = cpEd.get();
+    S.dirty = S.cp.trim() !== '';
+    if (!S.dirty) S.stale = false;
+    afterCpChange();
+  }
+});
+
+// ── Konvertering ──
+function fieldValues() {
+  return { title: $('fTitle').value, artist: $('fArtist').value, key: $('fKey').value, capo: $('fCapo').value, subtitle: $('fSub').value };
+}
+function runConvert() {
+  S.fields = fieldValues();
+  lastRes = convert(S.src, S.opts, S.fields);
+  srcEd.render();
+  const d = lastRes.detected;
+  $('fTitle').placeholder = d.title || 'Tittel';
+  $('fArtist').placeholder = d.artist || 'Artist';
+  $('fKey').placeholder = d.key || 'f.eks. C eller Am';
+  $('fCapo').placeholder = d.capo || 'ingen';
+  renderStats();
+  if (!S.dirty) setCp(lastRes.text);
+  else { S.stale = S.src.trim() !== ''; updateBanner(); }
+  persist();
+}
+function renderStats() {
+  const el = $('stats');
+  if (!S.src.trim()) { el.textContent = ''; return; }
+  const st = lastRes.stats;
+  let html = `${st.chordLines} akkordlinjer · ${st.lyricLines} tekstlinjer · ${st.sections} deler`;
+  const msgs = lastRes.notes.slice();
+  if (st.chordLines === 0) {
+    msgs.unshift(/\[[A-H][^\]]*\]/.test(S.src)
+      ? 'Denne teksten ser ut til å være ChordPro allerede – lim den inn i ChordPro-feltet.'
+      : 'Fant ingen akkordlinjer. Står akkordene på linjen over teksten? De må skrives som C, Am, F#m, Hm, G/H …');
+  }
+  html += msgs.map(m => `<p class="warn">${escHtml(m)}</p>`).join('');
+  el.innerHTML = html;
+}
+function setCp(text) {
+  S.cp = text;
+  cpEd.set(text);
+  S.stale = false;
+  updateBanner();
+  afterCpChange();
+}
+function updateBanner() { $('banner').hidden = !(S.dirty && S.stale); }
+function convertNow(skipConfirm) {
+  if (S.dirty && !skipConfirm && !confirm('Dette overskriver ChordPro-teksten du har redigert. Fortsette?')) return;
+  S.dirty = false;
+  lastRes = convert(S.src, S.opts, fieldValues());
+  setCp(lastRes.text);
+  persist();
+}
+function afterCpChange() {
+  updateBanner();
+  renderPreview();
+  if (!S.fnDirty) $('fn').value = S.fn = currentSuggestedName();
+  persist();
+}
+
+// ── Visning ──
+function renderPreview() {
+  const page = $('readerPage');
+  const text = cpEd.get();
+  const scroll = $('readerScroll').scrollTop;
+  if (!text.trim()) {
+    page.innerHTML = '<p class="empty">Her vises sangen slik den ser ut i Sangarkivet, og den oppdateres mens du skriver.</p>';
+    $('semis').textContent = '0';
+    $('btnSaveTr').hidden = true;
+    return;
+  }
+  const parsed = parseChordPro(text);
+  const meta = parsed.meta;
+  const base = meta.transpose || 0;
+  const semis = S.semis === null ? base : S.semis;
+  const ctx = { no: meta.norwegian, flats: cpUseFlats(meta, semis) };
+  const subs = [meta.artist, ...meta.subtitle].filter(Boolean);
+  const chips = [];
+  if (meta.key) {
+    chips.push(`Toneart <b>${escHtml(cpTranspose(meta.key, semis, ctx))}</b>` + (semis ? ` (originalt ${escHtml(meta.key)})` : ''));
+  }
+  if (semis) chips.push(`Transponert <b>${semis > 0 ? '+' : ''}${semis}</b>`);
+  if (meta.capo) chips.push(`Capo <b>${escHtml(meta.capo)}</b>`);
+  page.innerHTML =
+    `<h2 class="cp-title">${meta.title ? escHtml(meta.title) : '<span class="cp-untitled">Uten tittel</span>'}</h2>` +
+    subs.map(s => `<div class="cp-sub">${escHtml(s)}</div>`).join('') +
+    (chips.length ? `<div class="cp-meta">${chips.map(c => `<span class="cp-chip">${c}</span>`).join('')}</div>` : '') +
+    `<div class="cp-body">${cpRenderBody(parsed, semis)}</div>`;
+  $('readerScroll').scrollTop = scroll;
+  $('semis').textContent = semis > 0 ? '+' + semis : String(semis);
+  $('btnSaveTr').hidden = semis === base;
+  applyReaderChords();
+}
+function currentSuggestedName() {
+  const meta = parseChordPro(cpEd.get()).meta;
+  return suggestFilename(meta.title || fieldValues().title || (lastRes && lastRes.detected.title), meta.key);
+}
+function readerTranspose(d) {
+  const base = parseChordPro(cpEd.get()).meta.transpose || 0;
+  const cur = S.semis === null ? base : S.semis;
+  S.semis = Math.max(-11, Math.min(11, cur + d));
+  renderPreview();
+}
+$('trDown').onclick = () => readerTranspose(-1);
+$('trUp').onclick = () => readerTranspose(1);
+$('semis').onclick = () => { S.semis = null; renderPreview(); };
+function applyReaderFont() { $('readerPage').style.setProperty('--cp-fs', readerFs + 'rem'); }
+$('fsDown').onclick = () => readerFont(-1);
+$('fsUp').onclick = () => readerFont(1);
+function readerFont(d) {
+  readerFs = Math.max(0.8, Math.min(2, Math.round((readerFs + d * 0.1) * 100) / 100));
+  applyReaderFont();
+  try { localStorage.setItem(CP_FS_KEY, String(readerFs)); } catch {}
+}
+function applyReaderChords() {
+  $('readerPage').classList.toggle('hide-chords', !readerChords);
+  const b = $('chordsBtn');
+  b.classList.toggle('on', readerChords);
+  b.classList.toggle('off', !readerChords);
+  b.setAttribute('aria-pressed', String(readerChords));
+  b.title = readerChords ? 'Skjul akkorder' : 'Vis akkorder';
+}
+$('chordsBtn').onclick = () => {
+  readerChords = !readerChords;
+  applyReaderChords();
+  try { localStorage.setItem(CP_CH_KEY, readerChords ? '1' : '0'); } catch {}
+};
+$('btnSaveTr').onclick = () => {
+  if (S.semis === null) return;
+  setDirective('transpose', S.semis);
+  S.semis = null;
+  toast(`Startet transponering lagret i filen`);
+};
+
+// ── Redigeringshjelp for ChordPro ──
+function editRange(ta, start, end, text) {
+  ta.focus();
+  ta.setSelectionRange(start, end);
+  let ok = false;
+  try { ok = document.execCommand('insertText', false, text); } catch {}
+  if (!ok) { ta.setRangeText(text, start, end, 'end'); ta.dispatchEvent(new Event('input', { bubbles: true })); }
+}
+function lineBounds(ta) {
+  const v = ta.value;
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const ls = v.lastIndexOf('\n', s - 1) + 1;
+  let le = v.indexOf('\n', e > s && v[e - 1] === '\n' ? e - 1 : e);
+  if (le < 0) le = v.length;
+  return [ls, le];
+}
+function wrapLines(open, close) {
+  const ta = cpEd.ta;
+  const [ls, le] = lineBounds(ta);
+  editRange(ta, ls, le, open + '\n' + ta.value.slice(ls, le) + '\n' + close);
+}
+function insertChord() {
+  const ta = cpEd.ta;
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  if (e > s) { editRange(ta, s, e, '[' + ta.value.slice(s, e) + ']'); return; }
+  editRange(ta, s, s, '[]');
+  ta.setSelectionRange(s + 1, s + 1);
+}
+function insertComment() {
+  const ta = cpEd.ta;
+  const [ls] = lineBounds(ta);
+  editRange(ta, ls, ls, '{comment: }\n');
+  ta.setSelectionRange(ls + 10, ls + 10);
+}
+function insertRecall() {
+  const ta = cpEd.ta;
+  const [ls, le] = lineBounds(ta);
+  if (ta.value.slice(ls, le).trim() === '') editRange(ta, ls, le, '{chorus}');
+  else editRange(ta, ls, ls, '{chorus}\n\n');
+}
+document.querySelectorAll('[data-ins]').forEach(b => b.addEventListener('click', () => {
+  switch (b.dataset.ins) {
+    case 'chorus':  wrapLines('{start_of_chorus}', '{end_of_chorus}'); break;
+    case 'verse':   wrapLines('{start_of_verse: Vers }', '{end_of_verse}'); break;
+    case 'bridge':  wrapLines('{start_of_bridge}', '{end_of_bridge}'); break;
+    case 'recall':  insertRecall(); break;
+    case 'comment': insertComment(); break;
+    case 'chord':   insertChord(); break;
+  }
+}));
+cpEd.ta.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.code === 'KeyK') { e.preventDefault(); insertChord(); }
+});
+
+// {transpose: n} osv. i toppen av filen
+function setDirective(name, val) {
+  const ta = cpEd.ta, v = ta.value;
+  const re = new RegExp('^\\{\\s*' + name + '\\s*:.*\\}[ \\t]*\\n?', 'mi');
+  const m = v.match(re);
+  const line = val === 0 ? '' : '{' + name + ': ' + val + '}\n';
+  if (m) { editRange(ta, m.index, m.index + m[0].length, line); return; }
+  if (!line) return;
+  let pos = 0;
+  const head = /^\{\s*(?:title|t|subtitle|st|su|artist|composer|lyricist|key|capo|transpose)\b[^\n]*\n/i;
+  let rest = v;
+  let hm;
+  while ((hm = rest.match(head))) { pos += hm[0].length; rest = rest.slice(hm[0].length); }
+  editRange(ta, pos, pos, pos === 0 ? line + '\n' : line);
+}
+
+// ── Filer ──
+const inflate = async data => {
+  if (typeof DecompressionStream === 'undefined') throw new Error('Nettleseren kan ikke åpne .docx – lim inn teksten fra Word i stedet.');
+  return new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();
+};
+async function loadFile(f) {
+  try {
+    let text;
+    if (/\.docx$/i.test(f.name)) text = await readDocx(await f.arrayBuffer(), inflate);
+    else if (/\.doc$/i.test(f.name)) throw new Error('Gamle .doc-filer støttes ikke. Lagre som .docx, eller lim inn teksten.');
+    else {
+      const buf = await f.arrayBuffer();
+      text = new TextDecoder('utf-8').decode(buf);
+      if (text.includes('\uFFFD')) text = new TextDecoder('windows-1252').decode(buf);
+    }
+    setSrc(text);
+    toast('Åpnet ' + f.name);
+  } catch (e) { toast(e.message || 'Kunne ikke lese filen'); }
+}
+function setSrc(text) {
+  S.src = text;
+  srcEd.set(text);
+  runConvert();
+}
+$('btnOpen').onclick = () => $('fileIn').click();
+$('fileIn').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) loadFile(f); };
+$('btnPaste').onclick = async () => {
+  try { setSrc(await navigator.clipboard.readText()); }
+  catch { toast('Nettleseren ga ikke tilgang til utklippstavlen – lim inn med Ctrl+V i feltet.'); srcEd.ta.focus(); }
+};
+$('btnSample').onclick = () => setSrc(SAMPLE);
+$('btnClear').onclick = () => {
+  if (S.src.trim() && !confirm('Tømme originalen?')) return;
+  setSrc('');
+};
+const dropHost = $('edSrc');
+['dragenter', 'dragover'].forEach(t => dropHost.addEventListener(t, e => { e.preventDefault(); dropHost.classList.add('drop'); }));
+['dragleave', 'drop'].forEach(t => dropHost.addEventListener(t, e => { e.preventDefault(); dropHost.classList.remove('drop'); }));
+dropHost.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) loadFile(f); });
+
+// ── Innstillinger ──
+const CHECKS = { oHeader: 'header', oStrip: 'stripBoxes', oCollapse: 'collapse', oRecall: 'chorusRecall', oAuto: 'autoChorus', oVerse: 'verseLabels' };
+Object.entries(CHECKS).forEach(([id, key]) => $(id).addEventListener('change', () => { S.opts[key] = $(id).checked; runConvert(); }));
+$('oSnap').onchange = () => { S.opts.snap = Number($('oSnap').value); runConvert(); };
+$('oLoose').onchange = () => { S.opts.loose = $('oLoose').value; runConvert(); };
+let fieldTimer = 0;
+['fTitle', 'fArtist', 'fKey', 'fCapo', 'fSub'].forEach(id => $(id).addEventListener('input', () => { clearTimeout(fieldTimer); fieldTimer = setTimeout(runConvert, 150); }));
+$('btnReconvert').onclick = () => convertNow(false);
+$('btnBannerConvert').onclick = () => convertNow(true);
+
+// ── Lagring: kopier, last ned, GitHub ──
+$('fn').addEventListener('input', () => { S.fnDirty = $('fn').value.trim() !== ''; S.fn = $('fn').value; if (!S.fnDirty) $('fn').value = S.fn = currentSuggestedName(); persist(); });
+function fileName() {
+  let n = $('fn').value.trim() || currentSuggestedName();
+  if (!/\.[A-Za-z]+$/.test(n)) n += '.txt';
+  return n;
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch {
+    const t = document.createElement('textarea');
+    t.value = text; document.body.appendChild(t); t.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch {}
+    t.remove();
+    return ok;
+  }
+}
+$('btnCopy').onclick = async () => toast((await copyText(cpEd.get())) ? 'ChordPro kopiert' : 'Kunne ikke kopiere');
+$('btnDl').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([cpEd.get()], { type: 'text/plain;charset=utf-8' }));
+  a.download = fileName();
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+function ghStoredRepo() {
+  try { const v = (localStorage.getItem(GH_REPO_KEY) || '').trim(); return /^[\w.-]+\/[\w.-]+$/.test(v) ? v : ''; } catch { return ''; }
+}
+function ghDetectRepo() {
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+  if (!m) return null;
+  const seg = location.pathname.split('/')[1] || '';
+  return m[1] + '/' + (seg && !seg.includes('.') ? seg : m[1] + '.github.io');
+}
+const ghRepo = () => ghStoredRepo() || ghDetectRepo() || '';
+function ghLoadBranch() {
+  const repo = ghRepo();
+  if (!repo) return;
+  fetch('https://api.github.com/repos/' + repo, { headers: { Accept: 'application/vnd.github+json' } })
+    .then(r => r.ok ? r.json() : null).then(j => { if (j && j.default_branch) ghBranch = j.default_branch; }).catch(() => {});
+}
+$('ghRepo').placeholder = ghDetectRepo() || 'bruker/repo';
+$('ghRepo').value = ghStoredRepo();
+$('ghRepo').addEventListener('change', () => {
+  const v = $('ghRepo').value.trim();
+  if (v === '') { try { localStorage.removeItem(GH_REPO_KEY); } catch {} ghLoadBranch(); return; }
+  const m = v.match(/^(?:https?:\/\/github\.com\/)?([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/i);
+  if (!m) { toast('Skriv repoet som bruker/repo'); return; }
+  try { localStorage.setItem(GH_REPO_KEY, m[1] + '/' + m[2]); } catch {}
+  $('ghRepo').value = m[1] + '/' + m[2];
+  ghLoadBranch();
+});
+$('btnGh').onclick = async () => {
+  const repo = ghRepo();
+  if (!repo) { toast('Skriv inn GitHub-repoet (bruker/repo) først.'); $('ghRepo').focus(); return; }
+  const text = cpEd.get();
+  if (!text.trim()) { toast('Det er ingen ChordPro å lagre ennå.'); return; }
+  const path = 'sanger/' + fileName();
+  const base = `https://github.com/${repo}/new/${encodeURIComponent(ghBranch)}?filename=${path.split('/').map(encodeURIComponent).join('/')}`;
+  const withValue = base + '&value=' + encodeURIComponent(text);
+  const tooLong = withValue.length > 7000;
+  copyText(text);                                   // reservekopi hvis GitHub ikke fyller ut feltet
+  window.open(tooLong ? base : withValue, '_blank', 'noopener');
+  toast(tooLong ? 'Teksten er kopiert – lim den inn på GitHub-siden (Ctrl+V).' : 'GitHub åpnet. Trykk «Commit changes». Teksten er også kopiert.');
+};
+
+// ── Paneler ──
+const mq = window.matchMedia('(max-width: 899px)');
+function applyPanes() {
+  let on = ['orig', 'cp', 'view'].filter(p => S.panes[p]);
+  if (!on.length) { S.panes.cp = true; on = ['cp']; }
+  if (mq.matches && on.length > 1) {
+    const keep = S.panes[lastPane] ? lastPane : on[0];
+    S.panes = { orig: false, cp: false, view: false, [keep]: true };
+    on = [keep];
+  }
+  $('main').style.setProperty('--n', on.length);
+  ['orig', 'cp', 'view'].forEach(p => {
+    $('pane-' + p).classList.toggle('on', !!S.panes[p]);
+    document.querySelector(`.seg [data-pane="${p}"]`).setAttribute('aria-pressed', String(!!S.panes[p]));
+  });
+}
+document.querySelectorAll('.seg [data-pane]').forEach(b => b.addEventListener('click', () => {
+  const p = b.dataset.pane;
+  lastPane = p;
+  if (mq.matches) S.panes = { orig: false, cp: false, view: false, [p]: true };
+  else if (S.panes[p] && Object.values(S.panes).filter(Boolean).length === 1) return;
+  else S.panes[p] = !S.panes[p];
+  applyPanes(); persist();
+}));
+mq.addEventListener('change', applyPanes);
+
+// ── Lagring i nettleseren ──
+let persistTimer = 0;
+function persist() {
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ src: S.src, cp: S.cp, dirty: S.dirty, fields: S.fields, opts: S.opts, panes: S.panes, fn: S.fn, fnDirty: S.fnDirty })); } catch {}
+  }, 300);
+}
+let toastTimer = 0;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+// ── Start ──
+(function init() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch {}
+  if (saved) {
+    S.src = saved.src || '';
+    S.opts = { ...DEFAULT_OPTS, ...(saved.opts || {}) };
+    S.fields = { ...S.fields, ...(saved.fields || {}) };
+    S.panes = { ...S.panes, ...(saved.panes || {}) };
+    S.fn = saved.fn || ''; S.fnDirty = !!saved.fnDirty;
+    S.dirty = !!saved.dirty;
+    if (S.dirty) S.cp = saved.cp || '';
+  }
+  Object.entries(CHECKS).forEach(([id, key]) => { $(id).checked = !!S.opts[key]; });
+  $('oSnap').value = String(S.opts.snap);
+  $('oLoose').value = S.opts.loose;
+  $('fTitle').value = S.fields.title; $('fArtist').value = S.fields.artist;
+  $('fKey').value = S.fields.key; $('fCapo').value = S.fields.capo; $('fSub').value = S.fields.subtitle;
+  if (S.fnDirty) $('fn').value = S.fn;
+
+  lastPane = 'cp';
+  if (mq.matches) S.panes = { orig: !S.src.trim(), cp: !!S.src.trim(), view: false };
+  applyPanes();
+  applyReaderFont();
+  applyReaderChords();
+
+  srcEd.set(S.src);
+  lastRes = convert(S.src, S.opts, S.fields);
+  srcEd.render();
+  renderStats();
+  const d = lastRes.detected;
+  $('fTitle').placeholder = d.title || 'Tittel';
+  $('fArtist').placeholder = d.artist || 'Artist';
+  $('fKey').placeholder = d.key || 'f.eks. C eller Am';
+  $('fCapo').placeholder = d.capo || 'ingen';
+  if (S.dirty) { cpEd.set(S.cp); afterCpChange(); }
+  else setCp(lastRes.text);
+  ghLoadBranch();
+})();
+</script>
+</body>
+</html>
