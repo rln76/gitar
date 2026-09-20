@@ -699,6 +699,10 @@
     user-select: none;
   }
 
+  .view-toggle-btn.spin { animation: sa-spin 0.9s linear infinite; }
+  @keyframes sa-spin { to { transform: rotate(360deg); } }
+  .js-refresh:disabled { opacity: 0.6; cursor: default; }
+
   .ctl-group button.ctl-toggle { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; }
   .ctl-group button.ctl-toggle.on  { color: var(--accent); }
   .ctl-group button.ctl-toggle.off { color: var(--text-dim); text-decoration: line-through; }
@@ -842,6 +846,9 @@
           <option value="added">Sorter: Nyeste</option>
         </select>
         <div class="view-toggle">
+          <button class="view-toggle-btn js-refresh" onclick="refreshFromGithub()" title="Hent nye sanger fra GitHub (data.json og mappen sanger/)">⟳</button>
+        </div>
+        <div class="view-toggle">
           <button class="view-toggle-btn active" id="btnViewEdit" onclick="setArchiveView('edit')" title="Redigeringsvisning">✎</button>
           <button class="view-toggle-btn" id="btnViewCompact" onclick="setArchiveView('compact')" title="Kompaktvisning">☰</button>
         </div>
@@ -865,12 +872,14 @@
     <div style="display:flex;flex-direction:column;gap:1.2rem;max-width:420px;margin-top:0.5rem;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
         <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">GitHub-synk</div>
-        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Arkivet sjekker automatisk <code>data.json</code> ved siden av siden hver gang du åpner den. Trykk her for å sjekke på nytt uten å laste siden.</p>
-        <button class="btn secondary" onclick="syncFromGithub(true)">⟳ Hent oppdateringer</button>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Arkivet sjekker automatisk <code>data.json</code> når du åpner siden. Knappen under sjekker <code>data.json</code> på nytt <strong>og</strong> leter etter nye ChordPro-filer i mappen <code>sanger/</code> i repoet. Nye filer legges til som sanger.</p>
+        <label style="display:block;font-size:0.72rem;color:var(--text-muted);margin-bottom:0.3rem;">GitHub-repo (bruker/repo)</label>
+        <input type="text" id="ghRepoInput" onchange="saveGhRepo(this.value)" autocomplete="off" spellcheck="false" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Mono',monospace;font-size:0.8rem;padding:0.5rem 0.7rem;margin-bottom:0.9rem;">
+        <button class="btn secondary js-refresh" onclick="refreshFromGithub()">⟳ Hent oppdateringer</button>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
         <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">ChordPro</div>
-        <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;">Legg ChordPro-filer i repoet (f.eks. mappen <code>sanger/</code>) og skriv stien i feltet «ChordPro-fil» når du redigerer sangen. Sangen får da en <strong>♫ Vis</strong>-knapp som viser akkordene over teksten, med transponering og valg av tekststørrelse.</p>
+        <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;">Legg ChordPro-filer i mappen <code>sanger/</code> i repoet og trykk ⟳ – nye filer dukker opp som sanger med en <strong>♫ Vis</strong>-knapp. Tittel og artist hentes fra <code>{title}</code> og <code>{artist}</code> i filen (ellers fra filnavnet). Lenke og kommentar legger du til etterpå ved å redigere sangen. Filer som starter med <code>_</code> hoppes over.</p>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
         <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">Eksport</div>
@@ -2029,6 +2038,161 @@ async function syncFromGithub(manual) {
   }
 }
 
+// ══════════════════════════════════════════════════════════
+//  SANGER-MAPPEN — finn nye ChordPro-filer via GitHub
+// ══════════════════════════════════════════════════════════
+const SANGER_DIR  = 'sanger';
+const GH_REPO_KEY = 'sangarkiv_ghrepo';
+const CP_EXT      = /\.(txt|cho|chopro|chordpro|crd|pro)$/i;
+
+function ghStoredRepo() {
+  try {
+    const v = (localStorage.getItem(GH_REPO_KEY) || '').trim();
+    return /^[\w.-]+\/[\w.-]+$/.test(v) ? v : '';
+  } catch { return ''; }
+}
+// bruker.github.io/repo/  →  bruker/repo
+function ghDetectRepo() {
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+  if (!m) return null;
+  const seg = location.pathname.split('/')[1] || '';
+  return m[1] + '/' + (seg && !seg.includes('.') ? seg : m[1] + '.github.io');
+}
+function ghRepo() { return ghStoredRepo() || ghDetectRepo(); }
+
+function saveGhRepo(v) {
+  v = (v || '').trim();
+  if (v === '') { try { localStorage.removeItem(GH_REPO_KEY); } catch {} return; }
+  const m = v.match(/^(?:https?:\/\/github\.com\/)?([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/i);
+  if (!m) { showToast('Skriv repoet som bruker/repo, f.eks. rln76/gitar'); return; }
+  try { localStorage.setItem(GH_REPO_KEY, m[1] + '/' + m[2]); } catch {}
+  document.getElementById('ghRepoInput').value = m[1] + '/' + m[2];
+}
+function initGhRepoField() {
+  const inp = document.getElementById('ghRepoInput');
+  inp.value = ghStoredRepo();
+  inp.placeholder = ghDetectRepo() || 'bruker/repo';
+}
+
+async function ghListSongFiles(repo, dir, depth = 0) {
+  const url = `https://api.github.com/repos/${repo}/contents/${dir.split('/').map(encodeURIComponent).join('/')}`;
+  const res = await fetch(url, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-cache' });
+  if (!res.ok) { const err = new Error('HTTP ' + res.status); err.status = res.status; throw err; }
+  const items = await res.json();
+  if (!Array.isArray(items)) return [];
+  let files = items.filter(i => i.type === 'file' && CP_EXT.test(i.name) && !/^[._]/.test(i.name)).map(i => i.path);
+  if (depth < 2) {
+    for (const d of items.filter(i => i.type === 'dir' && !/^[._]/.test(i.name))) {
+      files = files.concat(await ghListSongFiles(repo, d.path, depth + 1));
+    }
+  }
+  return files;
+}
+
+// Sanger_C.txt → «Sanger» (bare brukt hvis filen ikke har {title})
+function cpFilenameTitle(p) {
+  return p.split('/').pop().replace(/\.[^.]+$/, '').replace(/_/g, ' ').replace(/\s+[A-H][#b]?m?$/, '').trim();
+}
+
+// Returnerer en melding til brukeren.
+async function scanSangerFolder() {
+  const repo = ghRepo();
+  if (!repo) return 'Skriv inn GitHub-repoet (bruker/repo) under System for å finne nye sanger.';
+
+  let paths;
+  try { paths = await ghListSongFiles(repo, SANGER_DIR); }
+  catch (e) {
+    if (e.status === 404) return `Fant ikke mappen «${SANGER_DIR}/» i ${repo} (feil repo-navn, eller privat repo?).`;
+    if (e.status === 403 || e.status === 429) return 'GitHub tillater bare 60 sjekker i timen uten innlogging – prøv igjen litt senere.';
+    return 'Kunne ikke sjekke mappen sanger/ (offline?).';
+  }
+
+  loadData();
+  const have = new Set(songs.map(s => (s.file || '').trim()).filter(Boolean));
+  const fresh = paths.filter(p => !have.has(p));
+  if (!fresh.length) return `Ingen nye sanger i ${SANGER_DIR}/ ✓`;
+
+  // Hent de nye filene (noen om gangen) og les tittel/artist
+  const results = [];
+  const queue = fresh.slice();
+  const worker = async () => {
+    while (queue.length) {
+      const p = queue.shift();
+      try {
+        const res = await fetch(cpFetchUrl(p), { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        try { localStorage.setItem(CP_CACHE + p, text); } catch {}
+        results.push({ path: p, meta: parseChordPro(text).meta });
+      } catch { results.push({ path: p, failed: true }); }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(6, queue.length) }, worker));
+  results.sort((a, b) => a.path.localeCompare(b.path, 'nb'));
+
+  const norm = s => (s || '').trim().toLowerCase();
+  let added = 0, linked = 0, failed = 0;
+  const dups = [];
+  const base = Date.now();
+  for (const r of results) {
+    if (r.failed) { failed++; continue; }
+    const title  = (r.meta.title || cpFilenameTitle(r.path)).trim();
+    const artist = (r.meta.artist || '').trim();
+    // finnes sangen fra før? (samme tittel+artist, eller samme tittel uten fil)
+    let match = songs.find(s => norm(s.title) === norm(title) && norm(s.artist) === norm(artist));
+    if (!match) {
+      const sameTitle = songs.filter(s => norm(s.title) === norm(title) && !(s.file || '').trim());
+      if (sameTitle.length === 1) match = sameTitle[0];
+    }
+    if (match) {
+      if (!(match.file || '').trim()) { match.file = r.path; linked++; }
+      else dups.push(r.path.split('/').pop());
+    } else {
+      songs.push({ id: uid(), title, artist, url: '', comment: '', file: r.path, added: base + added });
+      added++;
+    }
+  }
+
+  if (added || linked) {
+    saveData();
+    if (activeTab === 'archive') renderArchive(); else if (activeTab === 'sets') renderSets();
+  }
+
+  const parts = [];
+  if (added)  parts.push(`${added} ${added === 1 ? 'ny sang' : 'nye sanger'} fra ${SANGER_DIR}/`);
+  if (linked) parts.push(`${linked} koblet til ${linked === 1 ? 'eksisterende sang' : 'eksisterende sanger'}`);
+  if (dups.length) parts.push(`hoppet over ${dups.slice(0, 2).join(', ')}${dups.length > 2 ? ' m.fl.' : ''} (samme tittel og artist som en sang som allerede har fil – gi den en egen {title})`);
+  if (failed) parts.push(`${failed} ${failed === 1 ? 'fil' : 'filer'} ikke publisert ennå – prøv igjen om et minutt`);
+  return parts.join(' · ') + (added || linked ? ' ✓' : '');
+}
+
+// Knappen: data.json + sanger/-mappen, ett samlet svar
+let refreshing = false;
+let toastCollector = null;
+async function refreshFromGithub() {
+  if (refreshing) return;
+  refreshing = true;
+  const btns = document.querySelectorAll('.js-refresh');
+  btns.forEach(b => { b.disabled = true; b.classList.add('spin'); });
+  toastCollector = [];
+  try {
+    await syncFromGithub(false);
+    if (document.getElementById('conflictBg').classList.contains('open')) {
+      toastCollector.push('Løs konfliktene først, og trykk ⟳ igjen for å sjekke mappen sanger/.');
+    } else {
+      toastCollector.push(await scanSangerFolder());
+    }
+  } catch (e) {
+    toastCollector.push('Noe gikk galt under oppdatering.');
+  } finally {
+    const msgs = toastCollector;
+    toastCollector = null;
+    refreshing = false;
+    btns.forEach(b => { b.disabled = false; b.classList.remove('spin'); });
+    showToast(msgs.filter(Boolean).join(' · '));
+  }
+}
+
 function finalizeMerge(toAdd, resolvedConflicts, setsToAdd, setsToMerge, fileAdopt) {
   loadData();
   toAdd.forEach(s => songs.push(s));
@@ -2119,11 +2283,12 @@ function applyResolutions() {
 // ══════════════════════════════════════════════════════════
 let toastTimer;
 function showToast(msg) {
+  if (toastCollector) { toastCollector.push(msg); return; }   // under «Hent oppdateringer»: samle til én melding
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+  toastTimer = setTimeout(() => t.classList.remove('show'), Math.max(3200, Math.min(9000, msg.length * 55)));
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2147,6 +2312,7 @@ document.getElementById('searchInput').addEventListener('input', renderArchive);
 // ══════════════════════════════════════════════════════════
 loadData();
 renderArchive();
+initGhRepoField();
 syncFromGithub(false);
 </script>
 </body>
