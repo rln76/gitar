@@ -57,15 +57,12 @@ Då skal [Em]ingen plaga meg igj[C]en.
 
 [G]Tore Tang, ein [C]gamm[C/B]al [G]mann
 [G]Heile byen [C]kjen[C/B]ne [G]han
-G              C  C/B  Am   G  D
 [G]Han så leve av [C]gamm[C/B]alt [Am]brød og [G]vann [D]
 Kor han [Em]kom[D]me [C]fra vett [Em/B]bare han [D]
 Tore [G]Tang
 {end_of_chorus}
 
-
 [C] [G/B] [Am] [G] [D]
-
  
 [G]År har gått siden [C]Tore Tang va [G]spelemann.
 [D]Det e` den einaste [C]jobben han har [G]hatt.
@@ -84,7 +81,6 @@ G C G
 C Em Am G      D
 C Em Am G      D
  
-
 [G]Når han [C]går adle står og [G]ser på han.
 [D]Kje løye det, så [C]stygge som han [G]e'.
 [G]Han forstår, de [C]kan`kje aksept[G]era han.
