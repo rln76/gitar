@@ -1,0 +1,202 @@
+# ═══════════════════════════════════════════════════════════════
+#  MAL FOR SANGER I SANGARKIVET (ChordPro)
+#
+#  - Linjer som starter med # vises ikke i appen. De er bare notater.
+#  - Ingenting er påkrevd. Slett det du ikke trenger.
+#  - Lagre filen som UTF-8, f.eks. sanger/Tittel_C.txt
+#  - Fjern # foran de valgfrie linjene for å bruke dem.
+# ═══════════════════════════════════════════════════════════════
+
+
+# ── 1. METADATA (øverst i filen) ───────────────────────────────
+
+{title: Tore Tang}
+{subtitle: Tekst og melodi: Mods}
+
+# Flere undertittellinjer er lov:
+# {subtitle: Norsk tekst: Navn Navnesen}
+
+# Vises som «Musikk: ...» og «Tekst: ...»:
+# {composer: Navn Navnesen}
+# {lyricist: Navn Navnesen}
+
+# Artist. Brukes bare hvis artist-feltet i arkivet er tomt:
+# {artist: Mods}
+
+# Toneart, f.eks. C, Am, F#m, Bb. Skriver du H i akkordene (H, Hm, H7),
+# bruker appen norsk skrivemåte der B = b-dur og H = h-dur.
+{key: C}
+
+# Capo vises bare som informasjon. Akkordene skriver du slik du griper dem.
+# {capo: 2}
+
+# Start-transponering når sangen åpnes (halvtoner, minus for ned).
+# Akkordene i filen er originalen. Eksempel: to halvtoner ned.
+# {transpose: -2}
+
+
+# ── 2. VERS ────────────────────────────────────────────────────
+# Tekst som ikke står i en seksjon blir et vers. Tom linje = nytt vers.
+# Akkorden skrives i [hakeparentes] rett før stavelsen den skal stå over.
+
+{comment: Intro}
+
+[G]  [C]  x2
+ 
+[G]Når han går [C]adle står og [G]ser på han.
+[D]Kje løye det, så [C]stygge så han [G]e`.
+[G]Han forstår, de [C]kan`kje aksept[G]era han.
+[D]Har ingen fortid å [C]se tebage [Em]på.
+
+[D] [C]Han seie det at: I [D]døden får eg fred.
+Då skal [Em]ingen plaga meg igj[C]en.
+[C] [G/B]
+[Am]Eg skal ha [D]ro, der kor eg og Jesus skal [G]bo.
+ 
+{start_of_chorus}
+
+[G]Tore Tang, ein [C]gamm[C/B]al [G]mann
+[G]Heile byen [C]kjen[C/B]ne [G]han
+G              C  C/B  Am   G  D
+[G]Han så leve av [C]gamm[C/B]alt [Am]brød og [G]vann [D]
+Kor han [Em]kom[D]me [C]fra vett [Em/B]bare han [D]
+Tore [G]Tang
+{end_of_chorus}
+
+[C] [G/B] [Am] [G] [D]
+ 
+[Verse 2]
+G                 C            G
+År har gått siden Tore Tang va spelemann.
+D                  C              G
+Det e` den einaste jobben han har hatt.
+G                    C         G
+Når Tang e` død, går arven te  gitaren hans.
+D                  C              Em
+Det e` den einaste vennen han har hatt.
+D C                 D
+  Han vente på, den dagen han skal få.
+          Em              C
+Tror han, egen hybel-leilighet.
+C G/B Am                  D                     G
+      Kor ti det bler, det e det ennå ingen som vet.
+ 
+[Chorus]
+G              C C/B  G
+Tore Tang, ein gammal mann
+G          C  C/B G
+Heile byen kjenne han
+G              C  C/B  Am   G  D
+Han så leve av gammalt brød og vann
+        Em D  C   Em/B D
+Kor han komme fra vett bare han
+     G
+Tore Tang
+ 
+[Solo]
+G C G
+G C G
+C Em Am G      D
+C Em Am G      D
+ 
+[Verse 3]
+G           C             G
+Når han går adle står og ser på han.
+D                  C             G
+Kje løye det, så stygge som han e`.
+G               C           G
+Han forstår, de kan`kje akseptera han.
+D                  C         Em
+Har ingen fortid å se tebage på.
+D C                  D
+  Han seie det at: I døden får eg fred.
+        Em                C
+Då skal ingen plaga meg igjen.
+C G/B Am             D                        G
+      Eg skal ha ro, der kor eg og Jesus skal bo.
+ 
+[End Chorus]
+G              C C/B  G
+Tore Tang, ein gammal mann
+G          C  C/B G
+Heile byen kjenne han
+G              C  C/B  Am   G  D
+Han så leve av gammalt brød og vann
+        Em D  C   Em/B D
+Kor han komme fra vett bare han
+     G
+Tore Tang
+ 
+G              C C/B  G
+Tore Tang, ein gammal mann
+G          C  C/B G
+Heile byen kjenne han
+G              C  C/B  Am   G  D
+Han så leve av gammalt brød og vann
+        Em D  C   Em/B D
+Kor han komme fra vett bare han
+     G
+Tore Tang
+
+[C]Første linje i verset, [F]akkorden står over [C]ordet
+[G]Akkord midt i ord: Grim[G7]stad og må[Am]ne
+[F]Slash-akkord: [D/F#]bass på annen tone [G]her
+Linjer uten akkorder vises som vanlig tekst
+
+# Vers med navn (vises som liten overskrift over verset):
+{start_of_verse: Vers 2}
+[C]Andre vers [F]med egen [C]overskrift
+[G]Linje to i [C]vers to
+{end_of_verse}
+
+# Kortform: {sov: Vers 3} ... {eov}
+
+
+# ── 3. REFRENG ─────────────────────────────────────────────────
+# Vises med strek i margen og teksten «Refreng» over.
+
+{start_of_chorus}
+Her er [C]refrenget, [F]synges gjerne [G]sammen
+[Am]Andre linje i [F]refrenget, [G7]avslutning [C]her
+{end_of_chorus}
+
+# Kortform: {soc} ... {eoc}
+# Eget navn: {start_of_chorus: Refreng 2}
+
+# Gjenta refrenget uten å skrive det på nytt (skrives ut igjen med akkorder):
+{chorus}
+
+
+# ── 4. BRIDGE ──────────────────────────────────────────────────
+
+{start_of_bridge}
+[Am]Bridge-linje [F]en, [C]bridge-linje [G]to
+{end_of_bridge}
+
+# Kortform: {sob} ... {eob}
+
+{chorus}
+
+
+# ── 5. KOMMENTARER / MERKNADER ─────────────────────────────────
+# Vises i appen, men er ikke en del av sangen.
+
+{comment: Vanlig merknad, f.eks. «Spilles rolig»}
+{comment_italic: Merknad i kursiv}
+{comment_box: Merknad i ramme}
+
+# Kortformer: {c: ...}  {ci: ...}  {cb: ...}
+
+# Merknad inne i teksten (tekst med * først vises som kursiv, transponeres ikke):
+[C]Siste vers [*2 ganger]og [F]så [C]slutt
+
+
+# ── 6. TABULATUR / GRIP (vises i fast skrift, uten akkordbehandling) ──
+
+{start_of_tab: Intro-riff}
+e|--0--1--3--1--0--|
+B|--1--1--1--1--1--|
+G|--0--0--0--0--0--|
+{end_of_tab}
+
+# Kortform: {sot} ... {eot}
