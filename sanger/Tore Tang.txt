@@ -41,7 +41,7 @@
 
 {comment: Intro}
 
-[G]  [C]  x2
+[G]   [C]   [G]   [C]
  
 [G]Når han går [C]adle står og [G]ser på han.
 [D]Kje løye det, så [C]stygge så han [G]e`.
@@ -63,35 +63,20 @@ Kor han [Em]kom[D]me [C]fra vett [Em/B]bare han [D]
 Tore [G]Tang
 {end_of_chorus}
 
+
 [C] [G/B] [Am] [G] [D]
+
  
-[Verse 2]
-G                 C            G
-År har gått siden Tore Tang va spelemann.
-D                  C              G
-Det e` den einaste jobben han har hatt.
-G                    C         G
-Når Tang e` død, går arven te  gitaren hans.
-D                  C              Em
-Det e` den einaste vennen han har hatt.
-D C                 D
-  Han vente på, den dagen han skal få.
-          Em              C
-Tror han, egen hybel-leilighet.
-C G/B Am                  D                     G
-      Kor ti det bler, det e det ennå ingen som vet.
- 
-[Chorus]
-G              C C/B  G
-Tore Tang, ein gammal mann
-G          C  C/B G
-Heile byen kjenne han
-G              C  C/B  Am   G  D
-Han så leve av gammalt brød og vann
-        Em D  C   Em/B D
-Kor han komme fra vett bare han
-     G
-Tore Tang
+[G]År har gått siden [C]Tore Tang va [G]spelemann.
+[D]Det e` den einaste [C]jobben han har [G]hatt.
+[G]Når Tang e` død, går [C]arven te  [G]gitaren hans.
+[D]Det e` den einaste [C]vennen han har [Em]hatt.
+[D]  [C]Han vente på, den [D]dagen han skal få.
+Tror han, [Em]egen hybel-leilig[C]het.
+[C] [G/B] [Am]
+Kor ti det bler, det [D]e det ennå ingen som [G]vet.
+
+{chorus}
  
 [Solo]
 G C G
@@ -99,21 +84,17 @@ G C G
 C Em Am G      D
 C Em Am G      D
  
-[Verse 3]
-G           C             G
-Når han går adle står og ser på han.
-D                  C             G
-Kje løye det, så stygge som han e`.
-G               C           G
-Han forstår, de kan`kje akseptera han.
-D                  C         Em
-Har ingen fortid å se tebage på.
-D C                  D
-  Han seie det at: I døden får eg fred.
-        Em                C
-Då skal ingen plaga meg igjen.
-C G/B Am             D                        G
-      Eg skal ha ro, der kor eg og Jesus skal bo.
+
+[G]Når han [C]går adle står og [G]ser på han.
+[D]Kje løye det, så [C]stygge som han [G]e'.
+[G]Han forstår, de [C]kan`kje aksept[G]era han.
+[D]Har ingen [C]fortid å [Em]se tebage på.
+[D]  [C]Han seie det at: I [D]døden får eg fred.
+Då skal [Em]ingen plaga meg igj[C]en.
+[C] [G/B]
+[Am]Eg skal ha ro, [D]der kor eg og Jesus skal [G]bo.
+
+{chorus}
  
 [End Chorus]
 G              C C/B  G
