@@ -1,0 +1,44 @@
+{title: That's what friends are for}
+{artist: Dianne Warwick}
+{key: D}
+
+{comment: Instrumental}
+[D]  [D/C#]  [G/B]  [G]  [F#m7]  [Bm7]  [Em7]  [A7sus4]
+
+And [D]I never [F#m]thought I'd [Bm]feel this [Em]way
+And as far as I'm conc[C#dim7]erned
+I'm glad I [F#7]got the chance to [Bm7]say
+That I [G]do believe I [A7sus4]love you
+And [D]if I should [F#m]ever [Bm]go [Em]away
+Well then [Em7]close your eyes and [C#dim7]try
+To feel the [F#7]way we  do [Bm]today
+and then [G]if you can rem[A7sus4]ember
+
+{start_of_chorus}
+[D]Keep smiling, [D/C#]keep shining
+[G/B]Knowing you can [G]always count on [F#m7]me, for [Bm7]sure
+[G]That's what friends are [A7sus4]for
+[D]For good times, [D/C#]and bad times
+[F#m7]I'll be on your [B7]side forever [Em7]more
+[A7sus4]That's what friends are for
+{end_of_chorus}
+
+{comment: Instrumental}
+[D]  [F#m7]  [Bm7]  [Em7]
+
+Well you [Em]came and opened [C#dim7]me
+And now there's [F#7]so much more I [Bm7]see
+And so [G]by the way I [A7sus4]thank you
+And [D]then for the [F#m7]times when [Bm7]we're [Em7]apart
+Well then close your eyes and [C#dim7]know
+These words are [F#7]coming from my [Bm]heart
+And then [G]if you can [A7sus4]remember
+
+{start_of_chorus}
+[D]Keep smiling, [D/C#]keep shining
+[G/B]Knowing you can [G]always count on [F#m7]me for [Bm7]sure
+[G]That's what friends are [A7sus4]for
+[D]For good times, [D/C#]and bad times
+[F#m7]I'll be on your [B7]side forever [Em7]more
+[A7sus]That's what friends are for
+{end_of_chorus}
