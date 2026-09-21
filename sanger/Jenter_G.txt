@@ -1,0 +1,40 @@
+{title: Jenter}
+{artist: Di Derre}
+{key: G}
+{capo: 2}
+
+Jeg [G]traff henne på St.Hanshaugen [C]sommeren 89.
+Hun [D]gråt når hun var full, og [C]sang når hun var [G]blid.
+Jeg elsket henne høyt, hun [Bm]elsket meg vilt.
+[C]Høsten kom, døra smalt og [D]etterpå ble det stilt.
+
+Så [G]jeg traff ei lita jente [C]en regnfull vår
+med [D]bløte konsonanter og [C]regnvått [G]hår.
+Hun lovet meg troskap, jeg [Bm]lovet henne alt.
+[C]Vinteren kom, troskap gikk [D]og etterpå ble det kald[Em]t.
+
+{start_of_chorus}
+[G]Jenter som kommer og [Am]jenter som går.
+[C]Jenter som glipper, [Em]jenter du aldri får[D].
+[G]Jenter som smiler en    [Am]tidlig vår.
+[C]Jenter og en litt [D]sliten mata[G]dor. He-[Am]hey, [D]He-hey, He-He[Em]-hey
+{end_of_chorus}
+
+Ved [G]Frognerparken møtes to trikker [C]kvart på ni,
+[D]og hun smilte bak ruten til [C]vinteren var for[G]bi.
+Jeg skrev i rutens morgendugg: [Bm]Jeg tror jeg elsker deg!
+[C]Men våren kom og isen gikk og hun [D]seilte sin vei.
+
+{start_of_chorus}
+[G]Jenter som kommer og [Am]jenter som går.
+[C]Jenter som glipper, [Em]jenter du aldri [D]får.
+[G]Jenter som smiler en    [Am]tidlig vår.
+[C]Jenter og en litt [D]sliten mata[G]dor. He-[Am]hey, [D]He-hey, He-He[Em]-hey
+{end_of_chorus}
+
+[G]Månen er gul og [C]titter ned på skrå
+[D]og Gud er en fyr det er van[C]skelig å forst[G]å.
+Jeg kikker meg i speilet og [Bm]årene går.
+[C]Hei, jeg heter Berger. [D]Jeg er mata[Em]dor.
+
+{chorus}
