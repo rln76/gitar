@@ -335,6 +335,7 @@
         <label><input type="checkbox" id="oCollapse"> Fjern blank linje mellom hver linje (Word-dokumenter)</label>
         <label><input type="checkbox" id="oRecall"> Skriv {chorus} når refrenget gjentas uendret</label>
         <label><input type="checkbox" id="oAuto"> Finn refreng selv: avsnitt som gjentas ordrett</label>
+        <label><input type="checkbox" id="oFill"> Gjett akkorder i avsnitt som mangler dem (når bare første vers har akkorder)</label>
         <label><input type="checkbox" id="oVerse"> Vis versnummer som overskrift</label>
       </div>
       <div class="sel">
@@ -687,6 +688,131 @@ function mergeLine(raw, chordInfo, opts) {
 
 const stripChords = s => s.replace(/\[[^\]]*\]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
 
+
+// ══════════════════════════════════════════════════════════
+//  Gjett akkorder i vers som ikke har noen (etter et vers som har)
+// ══════════════════════════════════════════════════════════
+// Stavelser (norsk, grovt): en stavelse per vokalgruppe. first = første stavelse i et ord.
+function syllablesOf(text) {
+  const out = [];
+  for (const w of text.matchAll(/\S+/g)) {
+    const word = w[0];
+    const groups = [...word.matchAll(/[aeiouyæøåéèêóòôäöüáàâíìî]+/gi)];
+    groups.forEach((g, k) => {
+      let start = 0;
+      if (k > 0) {
+        const prevEnd = groups[k - 1].index + groups[k - 1][0].length;
+        start = g.index - prevEnd >= 2 ? prevEnd + 1 : prevEnd;      // syk-kel, In-ge-borg
+        while (start < g.index && !/[a-zæøåéèêóòôäöüáàâíìî]/i.test(word[start])) start++;
+      }
+      out.push({ start: w.index + start, first: k === 0 });
+    });
+  }
+  return out;
+}
+
+// «[G]Her [C]kommer» → { plain, chords:[{name,pos}], tail }
+function parseLineChords(text) {
+  let tail = '';
+  const tm = text.match(/(?:\s*\[\*[^\]]*\])+$/);
+  if (tm) { tail = tm[0]; text = text.slice(0, tm.index); }
+  const chords = [];
+  let plain = '', last = 0, m;
+  const re = /\[([^\]]*)\]/g;
+  while ((m = re.exec(text))) {
+    plain += text.slice(last, m.index);
+    chords.push({ name: m[1], pos: plain.length });
+    last = m.index + m[0].length;
+  }
+  plain += text.slice(last);
+  const trimmed = plain.replace(/\s+$/, '');
+  return { plain: trimmed, chords, tail };
+}
+
+// Tekst + akkorder (pos = tegnindeks) → ChordPro-linje. pos >= lengden = akkord etter siste ord.
+function buildWithChords(L, items) {
+  const its = items.map((it, i) => ({ ...it, i })).sort((a, b) => a.pos - b.pos || a.i - b.i);
+  let out = '', last = 0, k = 0;
+  const trailing = [];
+  for (const it of its) {
+    if (it.pos >= L.length) { trailing.push(it); continue; }
+    out += L.slice(last, it.pos) + '[' + it.name + ']';
+    last = it.pos;
+  }
+  out += L.slice(last);
+  for (const it of trailing) { out += ((k === 0 && it.pos === L.length) || out === '' ? '' : ' ') + '[' + it.name + ']'; k++; }
+  return out;
+}
+
+// Flytt akkordene fra en tekstlinje til en annen ved å følge stavelsene
+function transferChords(tpl, tgt) {
+  const ts = syllablesOf(tpl.plain), gs = syllablesOf(tgt);
+  if (!ts.length || !gs.length) return null;
+  const same = ts.length === gs.length;
+  const items = [];
+  for (const c of tpl.chords) {
+    if (c.pos >= tpl.plain.length) { items.push({ name: c.name, pos: tgt.length, trailing: true }); continue; }
+    let i = 0;
+    while (i + 1 < ts.length && ts[i + 1].start <= c.pos) i++;
+    let j = same ? i : Math.round((i + 0.5) * gs.length / ts.length - 0.5);
+    j = Math.max(0, Math.min(gs.length - 1, j));
+    if (!same && ts[i].first && c.pos - ts[i].start <= 1 && !gs[j].first) {   // akkord på ordstart → ordstart
+      let best = -1, bd = 1e9;
+      gs.forEach((g, k) => { if (g.first && Math.abs(k - j) < bd) { bd = Math.abs(k - j); best = k; } });
+      if (best >= 0) j = best;
+    }
+    items.push({ name: c.name, pos: gs[j].start });
+  }
+  let prev = -1;                                     // to akkorder på samme stavelse → skyv den siste
+  for (const it of items) {
+    if (it.trailing) continue;
+    if (it.pos <= prev) {
+      const nx = gs.find(g => g.start > prev);
+      if (nx) it.pos = nx.start;
+    }
+    prev = it.pos;
+  }
+  return { items, same };
+}
+
+function fillMissingChords(secs, stats) {
+  const klass = s => s.type === 'chorus' ? 'c' : s.type === 'bridge' ? 'b' : (s.type === 'plain' || s.type === 'verse') ? 'v' : null;
+  const info = secs.map(s => ({ s, k: klass(s), ly: s.recall || !s.lines ? [] : s.lines.filter(l => l.plain) }));
+  const tpls = info.filter(x => x.k && x.ly.some(l => l.hasChords));
+  const filled = [];
+  for (const x of info) {
+    if (!x.k || !x.ly.length || x.ly.some(l => l.hasChords)) continue;
+    const m = x.ly.length;
+    let best = null;
+    for (const t of tpls) {
+      if (t.k !== x.k) continue;
+      const n = t.ly.length;
+      if (m % n !== 0) continue;
+      const tiled = m !== n;
+      let d = 0;
+      x.ly.forEach((l, i) => { d += Math.abs(syllablesOf(t.ly[i % n].plain).length - syllablesOf(l.plain).length); });
+      const score = d / m + (tiled ? 1 : 0);
+      if (!best || score < best.score) best = { t, score, tiled };
+    }
+    if (!best || best.score > 3) continue;
+    const parsed = best.t.ly.map(l => parseLineChords(l.text));
+    x.ly.forEach((l, i) => {
+      const src = parsed[i % parsed.length];
+      if (!src.chords.length) return;
+      const r = transferChords(src, l.plain);
+      if (!r) return;
+      const tail = (l.text.match(/(?:\s*\[\*[^\]]*\])+$/) || [''])[0];
+      l.text = buildWithChords(l.plain, r.items) + tail;
+      l.hasChords = true;
+      stats.filledLines++;
+      if (r.same) stats.filledExact++;
+    });
+    stats.filledSections++;
+    filled.push(x.ly[0].plain);
+  }
+  return filled;
+}
+
 function convert(srcRaw, opts, ov) {
   ov = ov || {};
   const src = String(srcRaw).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
@@ -718,7 +844,7 @@ function convert(srcRaw, opts, ov) {
   const secs = [];
   let cur = null, pending = null;
   const allChords = [];
-  const stats = { chordLines: 0, lyricLines: 0, sections: 0, loose: 0 };
+  const stats = { chordLines: 0, lyricLines: 0, sections: 0, loose: 0, filledSections: 0, filledLines: 0, filledExact: 0, bareSections: 0 };
 
   const ensure = () => { if (!cur) cur = { type: 'plain', lines: [] }; };
   const close = () => {
@@ -816,6 +942,25 @@ function convert(srcRaw, opts, ov) {
       if (last && key(s) === key(last) && (canon(s) === canon(last) || !has(s))) { s.recall = true; s.lines = []; continue; }
       last = s;
     }
+  }
+
+  // Vers uten akkorder: gjett fra et vers som har (eller foreslå det)
+  if (opts.fillChords) {
+    const names = fillMissingChords(secs, stats);
+    if (stats.filledSections) {
+      const ex = names.slice(0, 3).map(n => '«' + (n.length > 30 ? n.slice(0, 30).trim() + '…' : n) + '»').join(', ') + (names.length > 3 ? ' …' : '');
+      notes.push('Gjettet akkorder til ' + stats.filledSections + (stats.filledSections === 1 ? ' avsnitt' : ' avsnitt') + ' uten akkorder (' + ex + '), ut fra avsnittene som har dem. ' +
+        (stats.filledExact === stats.filledLines ? 'Alle linjene har like mange stavelser som forelegget.'
+          : stats.filledExact + ' av ' + stats.filledLines + ' linjer har like mange stavelser som forelegget – resten er anslag.') + ' Sjekk at de havner riktig.');
+    }
+  }
+  {
+    const cls = s => s.type === 'chorus' ? 'c' : s.type === 'bridge' ? 'b' : (s.type === 'plain' || s.type === 'verse') ? 'v' : null;
+    const withLy = s => s.recall || !s.lines ? [] : s.lines.filter(l => l.plain);
+    const chorded = secs.filter(s => cls(s) && withLy(s).some(l => l.hasChords));
+    stats.bareSections = secs.filter(s => cls(s) && withLy(s).length && !withLy(s).some(l => l.hasChords) && chorded.some(c => cls(c) === cls(s))).length;
+    if (!opts.fillChords && stats.bareSections)
+      notes.push(stats.bareSections + (stats.bareSections === 1 ? ' avsnitt har' : ' avsnitt har') + ' ingen akkorder. Slå på «Gjett akkorder i avsnitt som mangler dem» for et forslag.');
   }
 
   // ── Metadata ──
@@ -1191,7 +1336,7 @@ const CP_FS_KEY = 'sangarkiv_cp_fs';       // deles med Sangarkivet
 const CP_CH_KEY = 'sangarkiv_cp_chords';
 const GH_REPO_KEY = 'sangarkiv_ghrepo';
 
-const DEFAULT_OPTS = { header: true, stripBoxes: true, collapse: true, chorusRecall: true, autoChorus: false, verseLabels: false, snap: 2, loose: 'spread' };
+const DEFAULT_OPTS = { header: true, stripBoxes: true, collapse: true, chorusRecall: true, autoChorus: false, fillChords: false, verseLabels: false, snap: 2, loose: 'spread' };
 const S = {
   src: '', cp: '', dirty: false, stale: false,
   fields: { title: '', artist: '', key: '', capo: '', subtitle: '' },
@@ -1538,7 +1683,7 @@ const dropHost = $('edSrc');
 dropHost.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) loadFile(f); });
 
 // ── Innstillinger ──
-const CHECKS = { oHeader: 'header', oStrip: 'stripBoxes', oCollapse: 'collapse', oRecall: 'chorusRecall', oAuto: 'autoChorus', oVerse: 'verseLabels' };
+const CHECKS = { oHeader: 'header', oStrip: 'stripBoxes', oCollapse: 'collapse', oRecall: 'chorusRecall', oAuto: 'autoChorus', oFill: 'fillChords', oVerse: 'verseLabels' };
 Object.entries(CHECKS).forEach(([id, key]) => $(id).addEventListener('change', () => { S.opts[key] = $(id).checked; runConvert(); }));
 $('oSnap').onchange = () => { S.opts.snap = Number($('oSnap').value); runConvert(); };
 $('oLoose').onchange = () => { S.opts.loose = $('oLoose').value; runConvert(); };
