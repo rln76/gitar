@@ -1723,9 +1723,11 @@ function ghStoredRepo() {
 }
 function ghDetectRepo() {
   const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
-  if (!m) return null;
-  const seg = location.pathname.split('/')[1] || '';
-  return m[1] + '/' + (seg && !seg.includes('.') ? seg : m[1] + '.github.io');
+  if (m) {
+    const seg = location.pathname.split('/')[1] || '';
+    return m[1] + '/' + (seg && !seg.includes('.') ? seg : m[1] + '.github.io');
+  }
+  return 'rln76/gitar';
 }
 const ghRepo = () => ghStoredRepo() || ghDetectRepo() || '';
 function ghLoadBranch() {
