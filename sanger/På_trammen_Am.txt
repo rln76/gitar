@@ -2,7 +2,6 @@
 {artist: Jens Gundersen}
 {key: Am}
 
-Verse 1]
 Når [Am]kvelden kommer [Am/C]sigandes og [Am]allting [E7]blir så [Am]stilt,
 syns [Dm6]jeg det er berikandes og [G7]koselig og [C]gildt
 å [F]sitte [G7]litt på [C]tramm[Am]en den [Dm6]lange [F]sommer[E7]natt
