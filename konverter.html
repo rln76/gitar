@@ -328,6 +328,7 @@
         <label>Toneart<input type="text" id="fKey" autocomplete="off"></label>
         <label>Capo<input type="text" id="fCapo" inputmode="numeric" autocomplete="off"></label>
         <label class="wide">Undertittel<input type="text" id="fSub" autocomplete="off" placeholder="f.eks. Tekst og melodi: Navn Navnesen"></label>
+        <label class="wide">Transponer til<input type="text" id="fTranspose" autocomplete="off" placeholder="f.eks. D – la stå tomt for å beholde original toneart"></label>
       </div>
       <div class="checks">
         <label><input type="checkbox" id="oHeader"> Les tittel og info øverst i teksten</label>
@@ -624,7 +625,8 @@ function detectHeader(lines, kinds) {
 }
 
 // Akkorder + tekstlinje → ChordPro-linje
-function mergeLine(raw, chordInfo, opts) {
+function mergeLine(raw, chordInfo, opts, trFn) {
+  trFn = trFn || (c => c);
   let s = raw.search(/\S/);
   if (s < 0) s = raw.length;
   let L = raw.slice(s).replace(/\s+$/, '');
@@ -647,11 +649,11 @@ function mergeLine(raw, chordInfo, opts) {
     const starts = [...L.matchAll(/\S+/g)].map(m => m.index);
     const n = chordInfo.chords.length, W = starts.length;
     items = chordInfo.chords.map((c, i) => ({
-      name: c.name, i,
+      name: trFn(c.name), i,
       pos: opts.loose === 'start' ? 0 : starts[Math.min(W - 1, Math.floor(i * W / n))]
     }));
   } else {
-    items = chordInfo.chords.map((c, i) => ({ name: c.name, pos: Math.max(0, c.col - s), i }));
+    items = chordInfo.chords.map((c, i) => ({ name: trFn(c.name), pos: Math.max(0, c.col - s), i }));
   }
   if (tol && !(chordInfo.loose && L)) {
     for (const it of items) {
@@ -813,6 +815,17 @@ function fillMissingChords(secs, stats) {
   return filled;
 }
 
+function firstKindChord(kinds) {
+  for (const k of kinds) {
+    if ((k.kind === 'chords' || k.kind === 'labelchords') && k.chords.chords.length) return k.chords.chords[0].name;
+  }
+  return '';
+}
+function keyRoot(k) {
+  const m = (k || '').trim().match(/^([A-H][#b]?)(m(?!aj)|min)?/);
+  return m ? m[1] + (m[2] ? 'm' : '') : '';
+}
+
 function convert(srcRaw, opts, ov) {
   ov = ov || {};
   const src = String(srcRaw).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
@@ -820,6 +833,28 @@ function convert(srcRaw, opts, ov) {
   const kinds = classify(lines, opts);
   const hdr = opts.header ? detectHeader(lines, kinds) : null;
   const notes = [];
+
+  // ── Transponering fra kildens toneart til ønsket toneart ──
+  let trFn = c => c, trNote = '', trOk = false, targetKeyRaw = (ov.transposeTo || '').trim();
+  if (targetKeyRaw) {
+    const srcRoot = keyRoot((hdr && hdr.key) || firstKindChord(kinds));
+    const tgtRoot = keyRoot(targetKeyRaw) || targetKeyRaw.trim();
+    const no = /^H/i.test(srcRoot) || /^H/i.test(tgtRoot);
+    const sp = cpRootPc(srcRoot.replace(/m$/, ''), no);
+    const tp = cpRootPc(tgtRoot.replace(/m$/, ''), no);
+    if (!srcRoot) {
+      trNote = 'Fant ingen toneart å transponere fra – sjekk at akkordene er gjenkjent riktig.';
+    } else if (sp === null || tp === null) {
+      trNote = 'Forsto ikke toneartsnavnet – skriv f.eks. «D» eller «Am».';
+    } else {
+      let n = tp - sp;
+      n = ((n + 6 + 12) % 12) - 6; if (n === -6) n = 6;
+      const ctx = { no, flats: cpUseFlats({ key: tgtRoot }, 0) };
+      trFn = name => cpTranspose(name, n, ctx);
+      trOk = true;
+      trNote = `Transponert fra ${srcRoot} til ${tgtRoot} (${n > 0 ? '+' : ''}${n} halvtoner).`;
+    }
+  }
 
   // Word-dokumenter og noen nettsider har en blank linje mellom hver linje → fjern dem
   let order = lines.map((_, i) => i);
@@ -865,16 +900,16 @@ function convert(srcRaw, opts, ov) {
   const flush = () => {
     if (!pending) return;
     ensure();
-    const text = pending.chords.map(c => '[' + c.name + ']').join('  ') +
+    const text = pending.chords.map(c => '[' + trFn(c.name) + ']').join('  ') +
                  pending.notes.map(n => '  [*' + n + ']').join('');
     cur.lines.push({ text, plain: '', hasChords: true });
-    allChords.push(...pending.chords.map(c => c.name));
+    allChords.push(...pending.chords.map(c => trFn(c.name)));
     stats.chordLines++;
     pending = null;
   };
   const addLyric = (raw, p) => {
     ensure();
-    const r = mergeLine(raw, p, opts);
+    const r = mergeLine(raw, p, opts, trFn);
     cur.lines.push(r);
     stats.lyricLines++;
     if (p) {
@@ -976,7 +1011,8 @@ function convert(srcRaw, opts, ov) {
   };
   const title = (ov.title || detected.title).trim();
   const artist = (ov.artist || detected.artist).trim();
-  const key = (ov.key || detected.key).trim();
+  const key = trOk ? targetKeyRaw.trim() : (ov.key || detected.key).trim();
+  if (trNote) notes.push(trNote);
   const capo = String(ov.capo || detected.capo).trim();
   const subs = ov.subtitle && ov.subtitle.trim() ? [ov.subtitle.trim()] : (hdr ? hdr.subtitle : []);
 
@@ -1339,7 +1375,7 @@ const GH_REPO_KEY = 'sangarkiv_ghrepo';
 const DEFAULT_OPTS = { header: true, stripBoxes: true, collapse: true, chorusRecall: true, autoChorus: false, fillChords: false, verseLabels: false, snap: 2, loose: 'spread' };
 const S = {
   src: '', cp: '', dirty: false, stale: false,
-  fields: { title: '', artist: '', key: '', capo: '', subtitle: '' },
+  fields: { title: '', artist: '', key: '', capo: '', subtitle: '', transposeTo: '' },
   opts: { ...DEFAULT_OPTS },
   panes: { orig: true, cp: true, view: true },
   semis: null, fn: '', fnDirty: false
@@ -1446,7 +1482,7 @@ const cpEd = makeEditor($('edCp'), {
 
 // ── Konvertering ──
 function fieldValues() {
-  return { title: $('fTitle').value, artist: $('fArtist').value, key: $('fKey').value, capo: $('fCapo').value, subtitle: $('fSub').value };
+  return { title: $('fTitle').value, artist: $('fArtist').value, key: $('fKey').value, capo: $('fCapo').value, subtitle: $('fSub').value, transposeTo: $('fTranspose').value };
 }
 function runConvert() {
   S.fields = fieldValues();
@@ -1688,7 +1724,7 @@ Object.entries(CHECKS).forEach(([id, key]) => $(id).addEventListener('change', (
 $('oSnap').onchange = () => { S.opts.snap = Number($('oSnap').value); runConvert(); };
 $('oLoose').onchange = () => { S.opts.loose = $('oLoose').value; runConvert(); };
 let fieldTimer = 0;
-['fTitle', 'fArtist', 'fKey', 'fCapo', 'fSub'].forEach(id => $(id).addEventListener('input', () => { clearTimeout(fieldTimer); fieldTimer = setTimeout(runConvert, 150); }));
+['fTitle', 'fArtist', 'fKey', 'fCapo', 'fSub', 'fTranspose'].forEach(id => $(id).addEventListener('input', () => { clearTimeout(fieldTimer); fieldTimer = setTimeout(runConvert, 150); }));
 $('btnReconvert').onclick = () => convertNow(false);
 $('btnBannerConvert').onclick = () => convertNow(true);
 
@@ -1822,6 +1858,7 @@ function toast(msg) {
   $('oLoose').value = S.opts.loose;
   $('fTitle').value = S.fields.title; $('fArtist').value = S.fields.artist;
   $('fKey').value = S.fields.key; $('fCapo').value = S.fields.capo; $('fSub').value = S.fields.subtitle;
+  $('fTranspose').value = S.fields.transposeTo || '';
   if (S.fnDirty) $('fn').value = S.fn;
 
   lastPane = 'cp';
