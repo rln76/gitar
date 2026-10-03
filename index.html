@@ -2089,12 +2089,14 @@ function ghStoredRepo() {
     return /^[\w.-]+\/[\w.-]+$/.test(v) ? v : '';
   } catch { return ''; }
 }
-// bruker.github.io/repo/  →  bruker/repo
+// bruker.github.io/repo/  →  bruker/repo  (faller tilbake til fast repo utenfor GitHub Pages)
 function ghDetectRepo() {
   const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
-  if (!m) return null;
-  const seg = location.pathname.split('/')[1] || '';
-  return m[1] + '/' + (seg && !seg.includes('.') ? seg : m[1] + '.github.io');
+  if (m) {
+    const seg = location.pathname.split('/')[1] || '';
+    return m[1] + '/' + (seg && !seg.includes('.') ? seg : m[1] + '.github.io');
+  }
+  return 'rln76/gitar';
 }
 function ghRepo() { return ghStoredRepo() || ghDetectRepo(); }
 
