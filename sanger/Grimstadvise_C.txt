@@ -1,5 +1,6 @@
 {title: Grimstadvise}
 {subtitle: Tekst og melodi: John Berg}
+{artist: John Berg}
 {key: C}
 
 [C]Mi kan'kje kalle Grimstad storby
