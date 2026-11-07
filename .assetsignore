@@ -1,0 +1,9 @@
+.git
+.wrangler
+.gitignore
+.assetsignore
+wrangler.jsonc
+build-data.mjs
+extra-songs.json
+sets.json
+added.json
