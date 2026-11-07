@@ -900,18 +900,18 @@
     <div style="display:flex;flex-direction:column;gap:1.2rem;max-width:420px;margin-top:0.5rem;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
         <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">GitHub-synk</div>
-        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Arkivet sjekker automatisk <code>data.json</code> når du åpner siden. Knappen under sjekker <code>data.json</code> på nytt <strong>og</strong> leter etter nye ChordPro-filer i mappen <code>sanger/</code> i repoet. Nye filer legges til som sanger.</p>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Arkivet henter <code>data.json</code> når du åpner siden. Den lages automatisk av repoet (mappen <code>sanger/</code> og <code>extra-songs.json</code>). Sanger fra repoet oppdateres, legges til og fjernes automatisk her; endringer gjør du i repoet. Sett og egne sanger lagres bare i denne nettleseren.</p>
         <label style="display:block;font-size:0.72rem;color:var(--text-muted);margin-bottom:0.3rem;">GitHub-repo (bruker/repo)</label>
         <input type="text" id="ghRepoInput" onchange="saveGhRepo(this.value)" autocomplete="off" spellcheck="false" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Mono',monospace;font-size:0.8rem;padding:0.5rem 0.7rem;margin-bottom:0.9rem;">
         <button class="btn secondary js-refresh" onclick="refreshFromGithub()">⟳ Hent oppdateringer</button>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
         <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">ChordPro</div>
-        <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;">Legg ChordPro-filer i mappen <code>sanger/</code> i repoet og trykk ⟳ – nye filer dukker opp som sanger med en <strong>♫ Vis</strong>-knapp. Tittel og artist hentes fra <code>{title}</code> og <code>{artist}</code> i filen (ellers fra filnavnet). Lenke og kommentar legger du til etterpå ved å redigere sangen. Filer som starter med <code>_</code> hoppes over.</p>
+        <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;">Legg ChordPro-filer i mappen <code>sanger/</code> i repoet og trykk ⟳ – nye filer dukker opp som sanger med en <strong>♫ Vis</strong>-knapp. Tittel og artist hentes fra <code>{title}</code> og <code>{artist}</code> i filen (ellers fra filnavnet). Kommentar skriver du som <code>{comment: …}</code> øverst i filen. Filer som starter med <code>_</code> hoppes over.</p>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
         <div style="font-family:'DM Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.6rem;">Eksport</div>
-        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Last ned alle sanger og sett som <code>data.json</code>. Last den opp til GitHub-repoet ditt (erstatt den gamle) for å gjøre endringene tilgjengelige på alle enheter.</p>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;line-height:1.5;">Last ned alle sanger og sett som sikkerhetskopi. <code>data.json</code> i repoet lages nå automatisk, så denne filen skal ikke lastes opp dit.</p>
         <button class="btn" onclick="exportArchive()">↓ Last ned data.json</button>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;">
@@ -1192,8 +1192,8 @@ function renderArchive() {
       <div class="song-actions">
         ${setsBtnHtml}
         ${readHtml}${linkHtml}
-        <button class="btn secondary" style="padding:0.35rem 0.6rem;font-size:0.75rem;" onclick="openSongModal('${s.id}')">✎</button>
-        <button class="btn danger" onclick="deleteSong('${s.id}')">✕</button>
+        ${s.origin === 'data' ? '' : `<button class="btn secondary" style="padding:0.35rem 0.6rem;font-size:0.75rem;" onclick="openSongModal('${s.id}')">✎</button>
+        <button class="btn danger" onclick="deleteSong('${s.id}')">✕</button>`}
       </div>
     </div>`;
   }).join('');
@@ -1241,7 +1241,7 @@ function saveSong() {
     const idx = songs.findIndex(s => s.id === editSongId);
     if (idx >= 0) Object.assign(songs[idx], { title, artist, url, comment, file });
   } else {
-    songs.push({ id: uid(), title, artist, url, comment, file, added: Date.now() });
+    songs.push({ id: uid(), title, artist, url, comment, file, added: Date.now(), local: true });
   }
   saveData();
   closeSongModal();
@@ -1965,7 +1965,7 @@ function exportArchive() {
   a.download = `data.json`;
   a.click();
   URL.revokeObjectURL(a.href);
-  showToast('data.json lastet ned — last den opp til GitHub-repoet ditt ✓');
+  showToast('Sikkerhetskopi lastet ned ✓');
 }
 
 function importArchive(event) {
@@ -2062,6 +2062,101 @@ function mergeIncomingData(data, opts = {}) {
 }
 
 // ══════════════════════════════════════════════════════════
+//  REPO-DATA — data.json fra repoet er fasit for sangene
+//  (lages automatisk av build-data.mjs). Sanger som kommer derfra oppdateres,
+//  legges til og fjernes her. Egne sanger (lagt til for hånd) og sett røres ikke.
+// ══════════════════════════════════════════════════════════
+function applyRepoData(data) {
+  const rs = (data && Array.isArray(data.songs) ? data.songs : [])
+    .filter(s => s && typeof s.title === 'string' && typeof s.artist === 'string' && s.title.trim());
+  if (rs.length === 0) return '';            // tom eller ugyldig data.json: aldri rydd bort noe
+  const rsets = data && Array.isArray(data.sets) ? data.sets : [];
+
+  loadData();
+  const key = s => s.title.trim().toLowerCase() + '||' + s.artist.trim().toLowerCase();
+  const remoteByKey = new Map();
+  rs.forEach(s => { if (!remoteByKey.has(key(s))) remoteByKey.set(key(s), s); });
+
+  const keyToLocalId = new Map();
+  const seen = new Set();
+  const stale = [], legacy = [];
+  let updated = 0, added = 0;
+
+  for (const s of songs) {
+    const k = key(s);
+    const imp = remoteByKey.get(k);
+    if (imp) {
+      if (seen.has(k)) { if (!s.local) stale.push(s); continue; }   // dobbel lokal oppføring
+      seen.add(k);
+      keyToLocalId.set(k, s.id);
+      const nu = {
+        title: imp.title.trim(), artist: imp.artist.trim(),
+        url: (imp.url || '').trim(), comment: imp.comment || '', file: (imp.file || '').trim()
+      };
+      if (Object.keys(nu).some(f => (s[f] || '') !== nu[f])) updated++;
+      Object.assign(s, nu);
+      s.origin = 'data';
+      delete s.local;
+    } else if (s.origin === 'data') {
+      stale.push(s);                          // finnes ikke lenger i repoet
+    } else if (!s.local) {
+      legacy.push(s);                         // gammel oppføring uten kjent opprinnelse
+    }
+  }
+
+  for (const [k, imp] of remoteByKey) {
+    if (seen.has(k)) continue;
+    const id = uid();
+    keyToLocalId.set(k, id);
+    songs.push({
+      id, title: imp.title.trim(), artist: imp.artist.trim(),
+      url: (imp.url || '').trim(), comment: imp.comment || '', file: (imp.file || '').trim(),
+      added: imp.added || Date.now(), origin: 'data'
+    });
+    added++;
+  }
+  const idRemap = {};
+  rs.forEach(i => { const id = keyToLocalId.get(key(i)); if (id && i.id) idRemap[i.id] = id; });
+
+  let remove = stale.slice();
+  if (remove.length > 5 && !confirm(`${remove.length} sanger i arkivet finnes ikke lenger i data.json fra repoet.\n\nOK = fjern dem fra denne enheten.\nAvbryt = behold dem foreløpig.`)) remove = [];
+  if (legacy.length) {
+    const shown = legacy.slice(0, 15).map(s => '• ' + s.title + (s.artist ? ' – ' + s.artist : '')).join('\n');
+    const more = legacy.length > 15 ? `\n… og ${legacy.length - 15} til` : '';
+    if (confirm(`Disse sangene finnes ikke i repoet:\n\n${shown}${more}\n\nOK = fjern dem fra arkivet.\nAvbryt = behold dem som egne sanger.`)) remove.push(...legacy);
+    else legacy.forEach(s => { s.local = true; });
+  }
+  const gone = new Set(remove.map(s => s.id));
+  if (gone.size) {
+    songs = songs.filter(s => !gone.has(s.id));
+    sets.forEach(set => { set.songIds = set.songIds.filter(id => !gone.has(id)); });
+  }
+
+  let setsChanged = 0;
+  for (const imp of rsets) {
+    if (!imp || typeof imp.name !== 'string') continue;
+    const ids = (imp.songIds || []).map(id => idRemap[id]).filter(Boolean);
+    const ex = sets.find(x => x.name.trim().toLowerCase() === imp.name.trim().toLowerCase());
+    if (ex) {
+      const have = new Set(ex.songIds);
+      const nw = ids.filter(i => !have.has(i));
+      if (nw.length) { ex.songIds.push(...nw); setsChanged++; }
+    } else { sets.push({ id: uid(), name: imp.name, songIds: ids, _open: false }); setsChanged++; }
+  }
+
+  saveData();
+  if (added || updated || gone.size || setsChanged) {
+    if (activeTab === 'archive') renderArchive(); else if (activeTab === 'sets') renderSets();
+  }
+  const parts = [];
+  if (added)       parts.push(`${added} ${added === 1 ? 'ny sang' : 'nye sanger'}`);
+  if (updated)     parts.push(`${updated} oppdatert`);
+  if (gone.size)   parts.push(`${gone.size} fjernet`);
+  if (setsChanged) parts.push(`${setsChanged} sett oppdatert`);
+  return parts.length ? parts.join(' · ') + ' ✓' : '';
+}
+
+// ══════════════════════════════════════════════════════════
 //  GITHUB SYNC — pull data.json committed to the repo
 // ══════════════════════════════════════════════════════════
 async function syncFromGithub(manual) {
@@ -2069,8 +2164,9 @@ async function syncFromGithub(manual) {
     const res = await fetch('data.json', { cache: 'no-store' });
     if (!res.ok) { if (manual) showToast('Fant ingen data.json ved siden av siden.'); return; }
     const remote = await res.json();
-    mergeIncomingData(remote, { silentIfEmpty: !manual });
-    if (manual) showToast('Sjekket data.json for oppdateringer ✓');
+    const msg = applyRepoData(remote);
+    if (msg) showToast(msg);
+    else if (manual) showToast('Sjekket data.json for oppdateringer ✓');
   } catch (e) {
     if (manual) showToast('Kunne ikke hente data.json (offline, eller siden kjører lokalt).');
   }
@@ -2188,7 +2284,7 @@ async function scanSangerFolder() {
       if (!(match.file || '').trim()) { match.file = r.path; linked++; }
       else dups.push(r.path.split('/').pop());
     } else {
-      songs.push({ id: uid(), title, artist, url: '', comment: '', file: r.path, added: base + added });
+      songs.push({ id: uid(), title, artist, url: '', comment: '', file: r.path, added: base + added, origin: 'data' });
       added++;
     }
   }
