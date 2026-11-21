@@ -1,0 +1,45 @@
+{title: Mil Etter Mil}
+{artist: Jahn Teigen}
+{key: F}
+
+{comment: Forspill}
+[F]
+
+[F]Hvil deg [Am]nå, du er [B]sliten.[B/A]
+[F]Hvil din [Am]kropp før din [B]kraft ebber ut.
+[Gm]Vann pipler [C]inn[Gm], i dine [C]sko.
+[Gm]Du vandrer i [C]regn.
+
+{start_of_chorus}
+[F]Mil [Gm]etter [F/A]mil [B]etter [G]mil. [C]
+Etter [F]mil [Gm]etter [F/A]mil [B]etter [G]mil. [C]
+{end_of_chorus}
+
+[F]Søk mot [Am]meg, hvis du [B]lengter.[B/A]
+[F]Rett ditt [Am]sinn mot et [B]annet sted.
+[Gm]Kom hit hvor jeg [C]er, [Gm]hvor solen er [C]nær.
+[Gm]Du må ikke [C]gå.
+
+{chorus}
+
+{start_of_bridge: Bridge 1}
+Og det er [B]langt å [C]gå. Det er [F]lengselen som [Dm]driver deg.
+Mot et [B]lys som du kan [C]se, men ikke [F]jeg.[B] [F]
+{end_of_bridge}
+
+{start_of_bridge: Bridge 2}
+Tenk deg [Dm]om [Am]nå. Hvor [B]farer du [F]hen?
+Du har [Gm]vandret alt for lenge.
+{end_of_bridge}
+
+{chorus}
+
+{start_of_bridge: Bridge 2}
+Tenk deg [Dm]om [Am]nå. Hvor [B]farer du [F]hen?
+Du har [Gm]vandret alt for lenge.
+{end_of_bridge}
+
+{start_of_chorus}
+[F]Mil [Gm]etter [F/A]mil [B]etter [G]mil. [C]
+Etter [F]mil [Gm]etter [F/A]mil [B]etter [G]mil. [C] [*rep.siste linje til fade]
+{end_of_chorus}
