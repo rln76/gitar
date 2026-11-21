@@ -1,0 +1,60 @@
+{title: Kursiv}
+{artist: Trang Fødsel}
+{key: A}
+{comment: [Intro] A - F - A - F - E x2}
+
+[A]Pappa driter penger [F]det er lett å se
+[A]Mamma går med minkpels kjør[F]er BMW
+[A]Jeg har alt jeg trenger [F]og jeg nyter det
+Har [C]lomma full av tusenlapper og all[E]e damene de
+
+{start_of_chorus}
+[Am]Digger, digger, [G]digger
+at jeg [C]står med kur[E]siv
+i de [F]aller største [G]bankene i [C]landet [G]
+[Am]Digger, digger, [G]digger
+rått mitt [C]jet-set [E]liv
+og at jeg [F]har en diger [G]hytte
+med en [G#]king-size [Bb]brygge ned ved [C]vannet
+{end_of_chorus}
+
+[Mellomspill] A - F - A - F - E
+
+[A]Pappa kjører mersce, [F]naturligvis
+[A]Mamma har en elsker[F], en gammel gris
+[A]Alle vil på TV [F]for enhver pris
+[C]Og alle sammen gliser når det [E]kommer en avis som
+
+{chorus}
+
+{start_of_bridge}
+[Dm]Jeg tar en tur til [Em]byen
+i min [Dm]Porsche-turbo cabriol[Am]et [*Toner: A - C - E - A - C - E]
+Og hvis [Dm]du er sånn passe [Em]deilig
+kan [F]du få [Em]være [A]med
+{end_of_bridge}
+
+[*Jazzy parti]
+Na- na –na –na –na –na –na -na
+[A]  [F]  [A]  [F]  [A]  [F]  [A]  [F]  [E]
+
+[Mellomspill] A - F - A - F - E
+
+[A]Pappa spiller tennis [F]og drikker årgangsvin
+[A]Mamma spiller golf og [F][*Slow Down!!!]sniffer kokain 
+[A]Jeg har vondt i hue av [F]litt for mye gin
+[C]Og alle sammen gremmes over [E]at ikke søstern min
+
+{start_of_chorus}
+[Am]Digger, digger, [G]digger
+at hun [C]står med kur[E]siv
+de [F]aller største [G]bankene i [C]landet [G]
+[Am]Digger, digger, [G]digger
+rått sitt [C]jet-set [E]liv
+og at hun [F]har en diger [G]hytte
+med en [G#]king-size [Bb]brygge ned ved [C]vannet
+med en [G#]king-size [Bb]brygge ned ved [C]vannet
+med en [G#]king-size [Bb]brygge ned ved [C]vannet
+{end_of_chorus}
+
+[Outro] A - F - A - F - E
