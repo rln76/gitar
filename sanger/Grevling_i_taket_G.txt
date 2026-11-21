@@ -1,0 +1,37 @@
+{title: Grevling i taket}
+{artist: Knutsen og Ludvigsen}
+{key: G}
+
+[G][C][D][G]
+
+[G]Så mye rart kan hende når man [C]bor i en tunnel
+Og [D7]det vi synger om er ikke [G]tull
+[G7]Vi trodde før at over oss var [C]bare jord og fjell
+Men [D7]plutselig en dag så vi et [G]hull
+
+Og ned fra hullet tittet det en [C]grå og snodig fyr
+Et [D7]overrasket blikk med hår omkr[G]ing
+[G7]Men fyren hadde hale, så vi så [C]det var et dyr
+Og vi [D7]skjønte snart det var en grev[G]eling
+
+{start_of_chorus}
+Vi har en grevling i taket, greve[A]ling, grevelang
+Vi har en [G]grevling i taket, greve[D7]lang
+[G7]Vi har ikke elle[C]diller eller [Cm]krokofanter
+[G]Men vi har en [D7]grevling i [G]taket
+{end_of_chorus}
+
+Goddagen, vesle grevling, du, [C]det der var ikke smart
+Du [D7]skulle tenkt på slike ting i [G]sted
+[G7]Å havne langt der oppe i et tak [C]er ganske rart
+Og [D7]særlig når du drev og grov deg [G]ned
+
+{chorus}
+
+Så opp blir ned, og ned blir [C]opp, og foran det blir bak
+Og [D7]tran blir brus og metemark blir [G]lyn
+[G7]Du grov deg ned i gulvet ditt [C]og havnet i vårt tak
+En [D7]svimmel grevling er et sjeldent [G]syn
+
+{chorus}
+{chorus}
