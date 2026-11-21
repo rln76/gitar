@@ -1,0 +1,66 @@
+{title: Gorine}
+{artist: Sørlandsvise}
+{key: C}
+{comment: Sørlandsvise}
+
+[C]Husane sidder med tean i [C7]tanga
+Der [F]jenta mi [C]bor på en [D7]salrygga [G7]kvist.
+[C]Det at æ elsker Gorine på [C7]kvisten,
+[F]det skulle [C]gjerne Gor[G7]ine ha [C]visst.
+Ja, [Dm7]hadd'æ [G7]hatt ho [C]her.
+Ja, [Am6]hadd'æ [H7]hatt ho [Em]her. [G7]
+[C]Da hadd'æ liavel ikke for[C7]talt ho.
+Æ [F]blir som en [C]skjelvanes [D7]ludafi[G7]sk
+[C]Bare æ ser ho bag ruda der [C7]oppe,
+ja, [F]bare å [C]se opp er [G7]litt av en [C]risk
+
+{start_of_chorus}
+[Dm7]liavel [G7]sønger æ: [C]Å for en da',
+så [Am6]tonane [H7]gjaller rondt [Em]holmer og [G7]knatter
+[C]Jenta er vakker, og ho ska æ [C7]ha.
+[F]Gorine [C]skjærgårde[Am]ns [G7]datt[C]er
+{end_of_chorus}
+
+[C]Tidlig når solstriba breies av [C7]brisen
+og [F]blinker blant [C]ender [D7]og [G7]ærfuglkre
+[C]tøffer æ seint etter blega langs [C7]skjerran
+[F]kjæler for [C]jenta som [G7]ikke er [C]med.
+Ja, [Dm7]hadd'æ [G7]hatt ho [C]her
+Ja, [Am6]hadd'æ [H7]hatt ho [Em]her[G7]
+[C]Da hadd'æ liavel ikke fått [C7]klemt ho
+for [F]sjekta må [C]styres og [D7]snørane [G7]dras.
+[C]Nevane mine er fulle av [C7]maneid.
+Å [F]klappes av [C]di er vel [G7]neppe no [C]stas
+
+{chorus}
+
+[C]Brygga er full udav sommerens [C7]gjester
+som [F]danser te' [C]trekkspill og [D7]urein gi[G7]tar.
+[C]Æ forer bålet med drivved og [C7]einer
+[F]Flammanes [C]dans er Go[G7]rines vi[C]kar.
+Ja, [Dm7]hadd'æ [G7]hatt ho [C]her
+Ja, [Am6]hadd'æ [H7]hatt ho [Em]her[G7]
+[C]Da hadd'æ liavel ikke fått [C7]dansa.
+Æ [F]kan sette [C]sjøbein i [D7]sjebelig [G7]vals.
+[C]Men mod Gorines små steg med de [C7]andre,
+er [F]tråkkinga [C]mi som en [G7]eldgammel [C]kalls
+
+{chorus}
+
+[C]Der glir Gorine i seilerens [C7]armer
+så [F]byfin i [C]shorts og et [D7]ant' lide [G7]plagg
+[C]Æ peiser bålet så gnistane [C7]fyger,
+[F]streifer to [C]havdy[G7]be øyer som [C]tagg!
+Ja, [Dm7]hadd'æ [G7]hatt ho [C]her
+Ja, [Am6]hadd'æ [H7]hatt ho [Em]her[G7]
+[C]Næ'men. der kommer ho, smiler for[C7]legen.
+Æ [F]syns æ må [C]si no: "Hør [D7]mågane, [G7]hør"
+[C]Stille vi sidder i knortete [C7]lønga
+og [F]lytter te [C]mågan mens [G7]bålet blir [C]glør.
+
+{start_of_chorus}
+[Dm7]Inni mæ [G7]sønger det: [C]Å for en da'.
+Og [Am6]tonane [H7]smyger rondt [Em]holmer og [G7]knatter.
+[C]Jenta er vakker, og ho ska æ [C7]ha.
+[F]Gorine [C]skjærgår[Am]dens [G7]dat[C]ter
+{end_of_chorus}
