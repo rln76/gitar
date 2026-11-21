@@ -1,0 +1,51 @@
+{title: E6}
+{artist: DDE}
+{key: D}
+
+{comment: Intro}
+|D|A|G|G|G|A|D|
+
+Han kjæm [D]inn over Svinesund med [F#m]trailern nesten tom
+Og han [G]kjenne at han sku[Em]lla hatt en [A]blund
+Siste sto[D]ppen var i Hamburg, mens dæm [F#m]lasta om
+Og en kaf[G]fekopp da han [Em]kryssa Øresund[A]
+Han tar [G]sjansen på at [Gm]UP har [D]avspasert i [Hm]kveld
+Han må [Em]opp te Bodø før det e for [A]seint
+Gjennom [D]Østfold bruke'n gasspedal'n, som [F#m]e det liv det gjeld
+Det han [G]kjøre mot e [A]nå som itj kan [D]vent
+
+[A]Han kjøre [D][A]E6, den [G]strakaste vei'n
+Kanskje [D]ligg det no'n i [Hm]arman hennes [A]no
+[D][A]E6, han [G]må itj bli for sein
+Kanskje [G]kjenne no'n [A]varmen hennes [D]no
+
+På et [D]langstrekk langsmed Mjøsa gi ein [F#m]kollega et signal
+Så han [G]slakke av når han [Em]veit korr radar'n [A]står
+Gjennom [D]Drivdalen e det veiarbeid, så vei'n e [F#m]litt for smal
+Han e nes[G]ten uti [Em]elva, men det går[A]
+På ei [G]veikro nordom [Gm]Stjørdalen, [D]med hår som bynne [Hm]grån
+Sett en [Em]som ska te Skibotn som emmi[A]sær
+Det e [D]trivelig å prat litt, men [F#m]te Bodø må'n
+Sjø om [G]Jesus kjæm og [A]dommedag e [D]nær
+
+[A]Han kjøre [D]E6, [A]den [G]strakaste vei'n
+Kanskje [D]ligg det no'n i [Hm]arman hennes [A]no
+[D]E6, [A]han [G]må itj bli for sein
+Kanskje [G]kjenne no'n [A]varmen hennes [D]no
+
+Det e [D]kuling over Saltfjellet, men [F#m]den legg sæ for ei stund
+Så dæm [G]slepp å kjør ko[Em]lonne gjennom [A]snø'n
+Kanskje [D]var det emmisæren som fikk ei [F#m]hjelpanes hånd
+Når dem kjem [G]te Fauske [Em]vinke dæm adjø[A]
+Siste [G]biten inn te [Gm]Bodø må [D]han gi litt ekstra [Hm]gass
+Og no [Em]merke han at han plutselig e [A]pigg
+Attmed [D]Sentralsykehuset finn [F#m]han parkeringsplass
+Og går [G]mot fødestua, [A]der han veit ho [D]ligg
+
+[A]Han kjøre [D]E6, [A]den [G]strakaste vei'n
+Kanskje [D]ligg det no'n i [Hm]arman hennes [A]no
+[D]E6, [A]han [G]må itj bli for sein
+Kanskje [G]kjenne no'n [A]varmen hennes [D]no
+
+{comment: Outro}
+|D|A|G|G|G|A|D|D||
