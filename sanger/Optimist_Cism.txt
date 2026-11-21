@@ -1,0 +1,44 @@
+{title: Optimist}
+{artist: Jahn Teigen}
+{key: C#m}
+
+[C#m]Jeg står i mørke og skimter lyset i det fjerne
+[A]Det er så kalt jeg søker varme fra en stjerne
+[F#m]Jeg tenker opp når jeg er [Ab]nede for jeg er en [C#m]Optimist
+
+[C#m]Jeg har et håp hver gang jeg går omkring i blinde
+[A]Det finnes en sol i øst som snart skal begynne å skinne
+[F#m]Som får meg opp når jeg er [Ab]nede om og om og om [C#m]igjen
+
+[C#m]Jeg har en drøm at vi tar vare på hverandre
+[A]Og gir det beste i oss selv til alle andre
+[F#m]Jeg tenker opp når jeg er [Ab]nede om å om å om [C#m]igjen [H]
+
+{start_of_chorus}
+[E]Op [H]ti [C#m]mist, jeg vet det går [F#m]bra [E]til [H]sist
+Så lenge jeg [Abm]leve[H]r [C#m]her [A]er jeg en [E]Op [H]ti [C#m]mist
+{end_of_chorus}
+
+[A]Jeg er jeg en [E]Op [H]ti [C#m]mist
+
+[C#m]Jeg har en tro jeg har ett mål som jeg skal finne
+[A]Jeg har en kraft og det er viljen til å vinne
+[F#m]Det får meg opp når jeg er [Ab]nede om og om og om [C#m]igjen
+
+[C#]Vil at livet blir en [Bm]dans i lyset
+[Ebm]En dans for håpet og en [Ab]dans for gleden
+[Fm]En dans i frihet og en [Bm]dans for freden
+[Ebm]Det skal [F]gåååååååååå
+
+{start_of_chorus}
+[C#]Op [Ab]ti [Bm]mist, jeg vet det går [Ebm]bra [C#]til [Ab]sist
+Så lenge jeg [Fm]lev[Ab]er [Bm]her [F#]er jeg en [C#]Op [Ab]ti [C#]mist [A]
+{end_of_chorus}
+
+{start_of_chorus}
+[*To ganger!]
+[D]Op [A]ti [Hm]mist, jeg vet det går [Em]bra [D]til [A]sist
+Så lenge jeg [F#m]lev[A]er [Hm]her [G]er jeg en [D]Op [A]ti [D]mist [A][*(kun første gang!)]
+{end_of_chorus}
+
+[G]Jeg er en [D]op - [A]ti - [D]mist
