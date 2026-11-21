@@ -1,0 +1,34 @@
+{title: Kanskje kommer kongen}
+{artist: Knutsen og Ludvigsen}
+{key: G}
+{capo: 3}
+{comment: Capo i 3. Bånd dersom den skal spilles sammen med CD.}
+
+{comment: Forspill}
+[G]  [C/G]
+
+Ka-[G]anskje kommer [C]kongen hit til [Am]middag nå i [D]dag.
+Vi har [G]dekket på per[C]rongen med god [G]mat av [D]alle [G]slag.
+
+Majo[G]nes og gåselever med [C]rødbeter og [D]løk.
+Det [G]beste skal på [Am]bordet med [C]kongen [D]på [G]besøk.
+
+Ka-[G]anskje kommer [C]kongen, kanskje [Am]ridende til [D]hest.
+Hesten [G]skal få smell[C]bonbonen, for da [G]passer [D]hatten [G]best.
+
+Kal[G]kun panert med hummer, små [C]glass med arti[D]sjokk.
+[G]Knutsen kan ser[Am]vere og [C]Ludvig[D]sen er [G]kokk.
+
+Når vi [G]kommer til des[G7]serten får vi [C]drops med kara[D]mell.
+Det er [G]ikke bra for [Am]tenner, det er [C]best vi [D]tar den [G]selv.
+
+Ka-[G]anskje kommer [C]kongen i en [Am]bil med stram sjå[D]før.
+Han kan [G]blåse opp bal[C]longen slik sjå[G]fører [D]alltid [G]gjør.
+
+Men [G]kanskje kommer'n [G7]ikke, all vår [C]oppdekning til [D]tross.
+Det [G]gjør ikke så [Am]mye, for da blir det mer til oss.
+
+Ka-[G]anskje kommer [C]kongen hit til [Am]middag nå i [D]dag.
+Vi har [G]dekket på per[C]rongen med god [G]mat av [D]alle [G]slag.
+
+{comment: Repeat og fade av siste vers}
