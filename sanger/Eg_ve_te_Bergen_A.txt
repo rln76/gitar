@@ -1,0 +1,36 @@
+{title: Eg ve te Bergen}
+{artist: Knutsen og Ludvigsen}
+{key: A}
+
+{comment: Intro}
+[A]  [F#m]  [D]  [E7]  [*x2]
+
+{start_of_chorus}
+Eg ve te [A]Bergen, ve te [F#m]Bergen med det [Bm]samme. [E7]
+Der [A]har eg det så [F#m]fisken I van[B]net: [E]
+[A]Vått [F#m]og kaldt, [Bm]og breifla[E]bb ove[A]ralt
+{end_of_chorus}
+
+intro x1
+
+Å leve går [A]an
+[C#m]uten [F#m]Brann
+og uten [D]bauekorps og [Bm]vannkopper på [G]Hauke---[E7]land.
+Eg e glad i godt [A]ver
+[C#m]og torre [F#m]kler,
+men [Bm]likevel så sønger eg så [D]ofte så eg [E7]kan:
+
+{chorus}
+
+Det fins mykje å [A]se,
+det [C#m]e'kje [F#m]det.
+Og ikkje [D]savner eg vel [Bm]fisketorv og [G]Lakse-v[E]åg,
+og [G]Laksevågfergen [E]og,
+nei mitt [A]problem,
+[C#m]eg ve [F#m]hem,
+e at eg [Bm]savner nokken eg
+så eg kan [D]prate i munnen [E]på,
+så det ikkje går [D]håll i hovvet [E]på,
+for de prater [D]like mykkje de [E]og.
+
+{chorus}
